@@ -1,0 +1,25 @@
+/src
+	/app
+		/view
+		/layout
+		/component
+		...main configuration of lib...
+	/shared
+		/component
+			/button
+			/input
+			/form
+			...
+		/composable
+		/lib
+		...
+	/feature
+		/feature-a
+			/view
+			/component
+			...
+		/feature-b
+			/view
+			/component
+			...
+			
