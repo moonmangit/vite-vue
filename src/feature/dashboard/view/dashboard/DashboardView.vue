@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useToast } from 'primevue/usetoast'
-import { mockActivities, mockMetrics, mockNodes } from '../../lib/dashboardData'
+import { mockActivities, mockChartSeries, mockMetrics, mockNodes } from '../../lib/dashboardData'
 import AnalyticsChartSection from './AnalyticsChartSection.vue'
 import DashboardHeaderSection from './DashboardHeaderSection.vue'
 import MetricsGridSection from './MetricsGridSection.vue'
@@ -50,7 +50,10 @@ function handleExecuteAction(actionLabel: string) {
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-12">
       <!-- Left Column (8 cols): Analytics Chart & Audit Activity Table Sections -->
       <div class="space-y-4 lg:col-span-8">
-        <AnalyticsChartSection :throughput-series="throughputSeries" />
+        <AnalyticsChartSection
+          :throughput-series="throughputSeries"
+          :series-data="mockChartSeries"
+        />
         <RecentActivitySection :audit-logs="mockActivities" />
       </div>
 

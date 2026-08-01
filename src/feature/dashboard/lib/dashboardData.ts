@@ -145,3 +145,25 @@ export const trafficHours = [
   { hour: '16:00', load: 88, peak: 92 },
   { hour: '20:00', load: 56, peak: 62 },
 ]
+
+export interface ChartSeriesData {
+  time: string
+  throughput: number
+  latency: number
+  errors: number
+}
+
+export const mockChartSeries: ChartSeriesData[] = [
+  { time: '00:00', throughput: 420, latency: 18, errors: 2 },
+  { time: '02:00', throughput: 530, latency: 16, errors: 1 },
+  { time: '04:00', throughput: 310, latency: 14, errors: 0 },
+  { time: '06:00', throughput: 680, latency: 22, errors: 3 },
+  { time: '08:00', throughput: 950, latency: 28, errors: 5 },
+  { time: '10:00', throughput: 1240, latency: 35, errors: 8 },
+  { time: '12:00', throughput: 1480, latency: 42, errors: 12 },
+  { time: '14:00', throughput: 1350, latency: 38, errors: 7 },
+  { time: '16:00', throughput: 1420, latency: 39, errors: 6 },
+  { time: '18:00', throughput: 1290, latency: 31, errors: 4 },
+  { time: '20:00', throughput: 1100, latency: 25, errors: 3 },
+  { time: '22:00', throughput: 850, latency: 20, errors: 2 },
+]

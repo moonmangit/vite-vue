@@ -12,6 +12,7 @@ When a layout or view file grows too long (~150-200 lines) or accumulates multi-
 - `src/app/layout/app/AppLayout.vue`
 - `src/app/layout/app/TopNavSection.vue`
 - `src/app/layout/app/SidebarNavSection.vue`
+- `src/app/layout/app/SidebarNavItemSection.vue`
 
 ### B. View Decomposition Pattern
 

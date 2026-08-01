@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import VueApexCharts from 'vue3-apexcharts'
 import './style.css'
 import App from './app/App.vue'
 import { i18n, installDesignTokens, installPrimeVue, pinia, router } from './app/config'
@@ -10,5 +11,6 @@ const app = createApp(App)
 app.use(pinia)
 app.use(router)
 app.use(i18n)
+app.use(VueApexCharts)
 installPrimeVue(app)
 app.mount('#app')
