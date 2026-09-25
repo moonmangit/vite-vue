@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import Button from 'primevue/button'
-import Card from 'primevue/card'
-import InputText from 'primevue/inputtext'
 import StatusBadge from '../../../../../shared/component/StatusBadge.vue'
+import AppButton from '../../../../../shared/component/AppButton.vue'
+import AppCard from '../../../../../shared/component/AppCard.vue'
+import AppInputText from '../../../../../shared/component/AppInputText.vue'
 import type { ActivityRecord } from '../../../lib/dashboardData'
 
 defineProps<{
@@ -11,37 +11,46 @@ defineProps<{
 </script>
 
 <template>
-  <Card>
+  <AppCard>
     <template #title>
       <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div class="flex items-center gap-2">
-          <i class="pi pi-shield text-primary-600 text-sm" />
-          <span
-            class="text-xs font-bold uppercase tracking-wider text-slate-700 app-dark:text-zinc-300"
-          >
-            Security & Audit Trail
+          <i class="pi pi-shield app-text-sm text-primary-600" />
+          <span class="app-text-xs app-text-normal font-bold uppercase tracking-wider">
+            {{ $t('features.dashboard.audit.title') }}
           </span>
         </div>
 
         <div class="flex items-center gap-2">
-          <InputText placeholder="Filter logs..." class="w-36 text-xs" />
-          <Button icon="pi pi-filter" severity="secondary" size="small" text class="p-1" />
+          <AppInputText
+            :placeholder="$t('features.dashboard.audit.filterPlaceholder')"
+            class="w-36 app-text-xs"
+          />
+          <AppButton
+            icon="pi pi-filter"
+            tone="secondary"
+            size="small"
+            appearance="text"
+            class="p-1"
+          />
         </div>
       </div>
     </template>
 
     <template #content>
       <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs border-collapse">
+        <table class="w-full text-left app-text-xs border-collapse">
           <thead>
-            <tr
-              class="border-b border-slate-200 text-slate-400 app-dark:border-zinc-800 app-dark:text-zinc-500"
-            >
-              <th class="py-2 px-3 font-semibold">User</th>
-              <th class="py-2 px-3 font-semibold">Action</th>
-              <th class="py-2 px-3 font-semibold">IP Address</th>
-              <th class="py-2 px-3 font-semibold">Status</th>
-              <th class="py-2 px-3 font-semibold text-right">Timestamp</th>
+            <tr class="border-b border-slate-200 app-text-muted app-dark:border-zinc-800">
+              <th class="py-2 px-3 font-semibold">{{ $t('features.dashboard.audit.user') }}</th>
+              <th class="py-2 px-3 font-semibold">{{ $t('features.dashboard.audit.action') }}</th>
+              <th class="py-2 px-3 font-semibold">
+                {{ $t('features.dashboard.audit.ipAddress') }}
+              </th>
+              <th class="py-2 px-3 font-semibold">{{ $t('features.dashboard.audit.status') }}</th>
+              <th class="py-2 px-3 font-semibold text-right">
+                {{ $t('features.dashboard.audit.timestamp') }}
+              </th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100 app-dark:divide-zinc-800/60">
@@ -50,19 +59,25 @@ defineProps<{
               :key="log.id"
               class="hover:bg-slate-50 app-dark:hover:bg-zinc-900/50 transition"
             >
-              <td class="py-2.5 px-3 font-bold text-slate-900 app-dark:text-white">
+              <td class="py-2.5 px-3 font-bold app-text-normal">
                 {{ log.user }}
               </td>
-              <td class="py-2.5 px-3 text-slate-600 app-dark:text-zinc-300">
+              <td class="py-2.5 px-3 app-text-muted">
                 {{ log.action }}
               </td>
-              <td class="py-2.5 px-3 font-mono text-[11px] text-slate-500 app-dark:text-zinc-400">
+              <td
+                class="py-2.5 px-3 font-mono app-text-custom app-text-muted"
+                style="--app-font-size: 11px"
+              >
                 {{ log.ip }}
               </td>
               <td class="py-2.5 px-3">
                 <StatusBadge :status="log.status" />
               </td>
-              <td class="py-2.5 px-3 text-right text-slate-400 app-dark:text-zinc-500 text-[11px]">
+              <td
+                class="py-2.5 px-3 text-right app-text-custom app-text-muted"
+                style="--app-font-size: 11px"
+              >
                 {{ log.timestamp }}
               </td>
             </tr>
@@ -70,5 +85,5 @@ defineProps<{
         </table>
       </div>
     </template>
-  </Card>
+  </AppCard>
 </template>

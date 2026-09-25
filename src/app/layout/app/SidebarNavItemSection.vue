@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import Tag from 'primevue/tag'
 import { RouterLink, useRoute } from 'vue-router'
 import type { NavigationItem } from '../../../shared/navigation/main'
+import AppTag from '../../../shared/component/AppTag.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -18,6 +18,10 @@ const props = withDefaults(
 const route = useRoute()
 
 const hasChildren = computed(() => Boolean(props.item.children && props.item.children.length > 0))
+
+function badgeTone(severity: NonNullable<NavigationItem['badge']>['severity']) {
+  return severity === 'warn' ? 'warning' : severity || 'info'
+}
 
 // Active ONLY for current page leaf links (parent groups are not active links themselves)
 const isActive = computed(() => {
@@ -81,25 +85,25 @@ function toggleExpand(e: Event) {
       :to="item.to && !hasChildren ? item.to : undefined"
       role="button"
       :tabindex="item.statusState === 'muted' ? -1 : 0"
-      class="group relative flex h-9 shrink-0 items-center justify-between rounded-lg px-2.5 text-xs font-semibold select-none transition-all duration-150 cursor-pointer"
+      class="group relative flex h-9 shrink-0 items-center justify-between rounded-lg px-2.5 app-text-sm font-semibold select-none transition-all duration-150 cursor-pointer"
       :class="[
         // Muted / Disabled state
         item.statusState === 'muted'
-          ? 'opacity-40 cursor-not-allowed pointer-events-none select-none text-slate-400 app-dark:text-zinc-500'
+          ? 'opacity-40 cursor-not-allowed pointer-events-none select-none app-text-disabled'
           : '',
 
         // Loading state
         item.statusState === 'loading'
-          ? 'animate-pulse text-slate-400 app-dark:text-zinc-400 bg-slate-100/60 app-dark:bg-zinc-900/60'
+          ? 'animate-pulse app-text-muted bg-slate-100/60 app-dark:bg-zinc-900/60'
           : '',
 
         // Active State (Current Page Only) vs Parent Containing Active Child
         isActive
           ? 'bg-primary-50 text-primary-700 font-bold shadow-2xs app-dark:bg-primary-600 app-dark:text-white app-dark:shadow-xs'
           : hasActiveChild
-            ? 'text-slate-900 font-bold bg-slate-100/70 app-dark:text-zinc-100 app-dark:bg-zinc-900/70'
+            ? 'app-text-normal font-bold bg-slate-100/70 app-dark:bg-zinc-900/70'
             : item.statusState !== 'muted' && item.statusState !== 'loading'
-              ? 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 app-dark:text-zinc-300 app-dark:hover:bg-zinc-900 app-dark:hover:text-white'
+              ? 'app-text-muted hover:bg-slate-100 app-hover-text-normal app-dark:hover:bg-zinc-900'
               : '',
       ]"
       @click="toggleExpand"
@@ -112,18 +116,18 @@ function toggleExpand(e: Event) {
         <div class="relative flex h-5 w-5 shrink-0 items-center justify-center">
           <i
             v-if="item.statusState === 'loading'"
-            class="pi pi-spin pi-spinner text-sm text-primary-600 app-dark:text-primary-400"
+            class="pi pi-spin pi-spinner app-text-sm text-primary-600 app-dark:text-primary-400"
           />
           <i
             v-else-if="item.icon"
             :class="[
               item.icon,
-              'text-sm transition-transform duration-150 group-hover:scale-105',
+              'app-text-sm transition-transform duration-150 group-hover:scale-105',
               isActive
                 ? 'text-primary-600 app-dark:text-white'
                 : hasActiveChild
                   ? 'text-primary-600 app-dark:text-primary-400'
-                  : 'text-slate-400 app-dark:text-zinc-400 group-hover:text-slate-700 group-hover:app-dark:text-zinc-200',
+                  : 'app-text-muted app-group-hover-text-normal',
             ]"
           />
 
@@ -142,7 +146,7 @@ function toggleExpand(e: Event) {
         <!-- Label -->
         <span
           v-if="!isSidebarCollapsed"
-          class="truncate text-xs tracking-tight leading-none"
+          class="truncate app-text-sm tracking-tight leading-none"
           :class="isActive ? 'text-primary-700 app-dark:text-white font-bold' : ''"
         >
           {{ item.labelKey ? $t(item.labelKey) : item.label }}
@@ -152,25 +156,25 @@ function toggleExpand(e: Event) {
       <!-- Right Side Indicators (Badge / Chevron / Loading Spinner) Container (Fixed h-5) -->
       <div v-if="!isSidebarCollapsed" class="flex h-5 items-center gap-1.5 shrink-0 ml-1.5">
         <!-- Badge Tag -->
-        <Tag
+        <AppTag
           v-if="item.badge"
           :value="item.badge.value"
-          :severity="item.badge.severity || 'info'"
-          class="text-[9px] px-1.5 py-0 font-mono font-bold uppercase rounded-md shadow-2xs leading-none"
+          :tone="badgeTone(item.badge.severity)"
+          class="app-text-sm px-1.5 py-0 font-mono font-bold uppercase rounded-md shadow-2xs leading-none"
         />
 
         <!-- Muted indicator -->
         <span
           v-if="item.statusState === 'muted'"
-          class="text-[9px] font-mono uppercase text-slate-400 app-dark:text-zinc-500 leading-none"
+          class="app-text-sm app-text-disabled font-mono uppercase leading-none"
         >
-          OFF
+          {{ $t('shared.navigation.off') }}
         </span>
 
         <!-- Chevron Toggle Icon for Parent Items -->
         <i
           v-if="hasChildren"
-          class="pi pi-chevron-right text-[10px] text-slate-400 transition-transform duration-300 app-dark:text-zinc-400"
+          class="pi pi-chevron-right app-text-sm app-text-muted transition-transform duration-300"
           :class="isExpanded ? 'rotate-90 text-primary-600 app-dark:text-primary-300' : ''"
         />
       </div>
@@ -191,17 +195,17 @@ function toggleExpand(e: Event) {
           <div class="flex items-center gap-2 min-w-0">
             <i
               v-if="item.icon"
-              :class="[item.icon, 'text-sm text-primary-600 app-dark:text-primary-400']"
+              :class="[item.icon, 'app-text-sm text-primary-600 app-dark:text-primary-400']"
             />
-            <span class="text-xs font-bold text-slate-800 app-dark:text-zinc-100 truncate">
+            <span class="app-text-sm app-text-normal font-bold truncate">
               {{ item.labelKey ? $t(item.labelKey) : item.label }}
             </span>
           </div>
-          <Tag
+          <AppTag
             v-if="item.badge"
             :value="item.badge.value"
-            :severity="item.badge.severity || 'info'"
-            class="text-[9px] px-1.5 py-0 font-mono font-bold uppercase rounded-md shadow-2xs leading-none"
+            :tone="badgeTone(item.badge.severity)"
+            class="app-text-sm px-1.5 py-0 font-mono font-bold uppercase rounded-md shadow-2xs leading-none"
           />
         </div>
 
@@ -215,13 +219,17 @@ function toggleExpand(e: Event) {
             :depth="1"
           />
         </div>
-        <div v-else-if="item.to" class="mt-2 text-[11px] text-slate-500 app-dark:text-zinc-400">
+        <div v-else-if="item.to" class="mt-2 app-text-sm app-text-muted">
           <RouterLink
             :to="item.to"
-            class="inline-flex items-center gap-1.5 text-primary-600 font-medium hover:underline app-dark:text-primary-400"
+            class="inline-flex items-center gap-1.5 app-text-sm text-primary-600 font-medium hover:underline app-dark:text-primary-400"
           >
-            <span>Open {{ item.labelKey ? $t(item.labelKey) : item.label }}</span>
-            <i class="pi pi-arrow-right text-[10px]" />
+            <span>{{
+              $t('shared.navigation.openItem', {
+                item: item.labelKey ? $t(item.labelKey) : item.label,
+              })
+            }}</span>
+            <i class="pi pi-arrow-right app-text-sm" />
           </RouterLink>
         </div>
       </div>

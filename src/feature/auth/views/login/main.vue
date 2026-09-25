@@ -11,26 +11,26 @@ import LoginForm from '../../component/LoginForm.vue'
     >
       <div class="mb-6 text-center">
         <div
-          class="inline-flex size-12 items-center justify-center rounded-xl bg-primary-600 text-xl font-black text-white shadow-md shadow-primary-500/20 mb-3"
+          class="inline-flex size-12 items-center justify-center rounded-xl bg-primary-600 app-text-xl font-black text-white shadow-md shadow-primary-500/20 mb-3"
         >
           A
         </div>
         <div class="flex items-center justify-center gap-2 mb-1">
-          <h1 class="text-2xl font-black tracking-tight text-slate-900 app-dark:text-white">
+          <h1 class="app-text-2xl app-text-normal font-black tracking-tight">
             Apex<span class="text-primary-600">Admin</span>
           </h1>
         </div>
-        <p class="text-xs text-slate-500 app-dark:text-zinc-400">
-          {{ $t('auth.title') }}
+        <p class="app-text-xs app-text-muted">
+          {{ $t('features.auth.login.title') }}
         </p>
       </div>
 
       <LoginForm />
 
       <div
-        class="mt-6 border-t border-slate-100 pt-4 text-center text-xs text-slate-400 app-dark:border-zinc-800 app-dark:text-zinc-500"
+        class="mt-6 border-t border-slate-100 pt-4 text-center app-text-xs app-text-muted app-dark:border-zinc-800"
       >
-        <span>{{ $t('auth.version') }}</span>
+        <span>{{ $t('features.auth.login.version') }}</span>
       </div>
     </div>
   </div>

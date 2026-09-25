@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import StatCard from '../../../../../shared/component/StatCard.vue'
-import type { MetricItem } from '../../../lib/dashboardData'
+import type { DashboardMetric } from '../../../lib/dashboardData'
 
 defineProps<{
-  metrics: MetricItem[]
+  metrics: DashboardMetric[]
 }>()
 </script>
 

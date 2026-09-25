@@ -1,4 +1,4 @@
-import { existsSync, readdirSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -35,7 +35,69 @@ function containsFiles(path) {
   })
 }
 
+function checkNoEmptyDirectories(path) {
+  const absolutePath = join(root, path)
+  if (!existsSync(absolutePath)) return
+
+  const entries = readdirSync(absolutePath, { withFileTypes: true })
+  const isPlaceholderOnly =
+    entries.length > 0 && entries.every((entry) => entry.name === '.gitkeep')
+  if (!entries.length || isPlaceholderOnly) {
+    errors.push(`${path}/: remove empty or placeholder-only directories`)
+    return
+  }
+
+  for (const entry of entries) {
+    if (entry.isDirectory()) checkNoEmptyDirectories(join(path, entry.name))
+  }
+}
+
+function sourceFiles(path) {
+  const absolutePath = join(root, path)
+  if (!existsSync(absolutePath)) return []
+
+  return readdirSync(absolutePath, { withFileTypes: true }).flatMap((entry) => {
+    const entryPath = `${path}/${entry.name}`
+    if (entry.isDirectory()) return sourceFiles(entryPath)
+    return /\.(?:ts|vue)$/.test(entry.name) ? [entryPath] : []
+  })
+}
+
+function checkWrapperImports(section) {
+  const importPattern =
+    /(?:from\s*|import\s*)['"]((?:primevue\/[^'"]+|vue3-apexcharts|apexcharts))['"]/g
+
+  for (const sourcePath of sourceFiles(`src/${section}`)) {
+    const isSharedWrapper =
+      sourcePath.startsWith('src/shared/component/App') && /\.vue$/.test(sourcePath)
+    const isPrimeVueSetup = sourcePath.startsWith('src/app/config/primevue/')
+    const isToastService = sourcePath === 'src/shared/toast/composable/useAppToast.ts'
+    const isToastOutlet = sourcePath === 'src/shared/toast/component/AppToastOutlet.vue'
+    const isChartComponent = sourcePath === 'src/shared/component/AppChart.vue'
+    const isChartTypes = sourcePath === 'src/shared/component/AppChart.types.ts'
+    const contents = readFileSync(join(root, sourcePath), 'utf8')
+
+    for (const match of contents.matchAll(importPattern)) {
+      const specifier = match[1]
+      const allowed =
+        (specifier.startsWith('primevue/') &&
+          (isSharedWrapper ||
+            isPrimeVueSetup ||
+            (isToastService && specifier === 'primevue/usetoast') ||
+            (isToastOutlet && ['primevue/usetoast', 'primevue/toast'].includes(specifier)))) ||
+        (specifier === 'vue3-apexcharts' && isChartComponent) ||
+        (specifier === 'apexcharts' && (isChartComponent || isChartTypes))
+
+      if (!allowed) {
+        errors.push(`${sourcePath}: use the shared App* wrapper instead of importing ${specifier}`)
+      }
+    }
+  }
+}
+
 function checkApp() {
+  checkNoEmptyDirectories('src/app')
+  checkWrapperImports('app')
   requireFile('src/app/App.vue', 'app root must provide App.vue')
   requireFile('src/app/config/main.ts', 'app config entry point is required')
   requireFile('src/app/layout', 'app layouts must live under app/layout/')
@@ -46,6 +108,8 @@ function checkApp() {
 }
 
 function checkFeatures() {
+  checkNoEmptyDirectories('src/feature')
+  checkWrapperImports('feature')
   for (const featureName of directories('src/feature')) {
     const featurePath = `src/feature/${featureName}`
     requireFile(`${featurePath}/route.config.ts`, 'each feature needs route.config.ts')
@@ -68,6 +132,8 @@ function checkFeatures() {
 }
 
 function checkShared() {
+  checkNoEmptyDirectories('src/shared')
+  checkWrapperImports('shared')
   const sharedCategories = new Set([
     'asset',
     'component',

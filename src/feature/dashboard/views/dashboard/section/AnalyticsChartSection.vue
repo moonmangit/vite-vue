@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { ApexOptions } from 'apexcharts'
-import Button from 'primevue/button'
-import Card from 'primevue/card'
-import VueApexCharts from 'vue3-apexcharts'
+import { useI18n } from 'vue-i18n'
 import { mockChartSeries, type ChartSeriesData } from '../../../lib/dashboardData'
+import AppButton from '../../../../../shared/component/AppButton.vue'
+import AppCard from '../../../../../shared/component/AppCard.vue'
+import AppChart from '../../../../../shared/component/AppChart.vue'
+import type { AppChartOptions } from '../../../../../shared/component/AppChart.types'
 
 const props = withDefaults(
   defineProps<{
@@ -22,24 +23,25 @@ type TimeframeType = '24h' | '7d' | '30d'
 
 const activeMetric = ref<MetricType>('throughput')
 const activeTimeframe = ref<TimeframeType>('24h')
+const { t } = useI18n({ useScope: 'global' })
 
 const metricConfigs = {
   throughput: {
-    label: 'Realtime System Throughput',
+    labelKey: 'features.dashboard.chart.throughput',
     unit: 'req/sec',
     icon: 'pi pi-chart-line',
     colors: ['#4f46e5', '#818cf8'],
     colorName: 'indigo',
   },
   latency: {
-    label: 'Average Latency',
+    labelKey: 'features.dashboard.chart.latency',
     unit: 'ms',
     icon: 'pi pi-clock',
     colors: ['#f59e0b', '#fbbf24'],
     colorName: 'amber',
   },
   errors: {
-    label: 'Error Rate',
+    labelKey: 'features.dashboard.chart.errorRate',
     unit: '%',
     icon: 'pi pi-exclamation-triangle',
     colors: ['#ef4444', '#f87171'],
@@ -61,12 +63,12 @@ const activeSeriesValues = computed(() => {
 
 const series = computed(() => [
   {
-    name: metricConfigs[activeMetric.value].label,
+    name: t(metricConfigs[activeMetric.value].labelKey),
     data: activeSeriesValues.value,
   },
 ])
 
-const chartOptions = computed<ApexOptions>(() => {
+const chartOptions = computed<AppChartOptions>(() => {
   const currentConfig = metricConfigs[activeMetric.value]
   return {
     chart: {
@@ -74,7 +76,7 @@ const chartOptions = computed<ApexOptions>(() => {
       height: 280,
       toolbar: { show: false },
       zoom: { enabled: false },
-      fontFamily: 'Google Sans, Inter, sans-serif',
+      fontFamily: 'Noto Sans Thai',
       sparkline: { enabled: false },
       background: 'transparent',
     },
@@ -142,7 +144,7 @@ const chartOptions = computed<ApexOptions>(() => {
 </script>
 
 <template>
-  <Card class="h-full border border-slate-200/80 shadow-xs app-dark:border-zinc-800">
+  <AppCard class="h-full border border-slate-200/80 shadow-xs app-dark:border-zinc-800">
     <template #title>
       <div class="flex flex-wrap items-center justify-between gap-3">
         <!-- Header Left: Icon & Metric Title -->
@@ -150,14 +152,14 @@ const chartOptions = computed<ApexOptions>(() => {
           <div
             class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 app-dark:bg-indigo-950/60 app-dark:text-indigo-400"
           >
-            <i :class="metricConfigs[activeMetric].icon" class="text-sm" />
+            <i :class="metricConfigs[activeMetric].icon" class="app-text-sm" />
           </div>
           <div>
-            <h3 class="text-sm font-bold tracking-tight text-slate-800 app-dark:text-zinc-100">
-              {{ metricConfigs[activeMetric].label }}
+            <h3 class="app-text-sm app-text-normal font-bold tracking-tight">
+              {{ t(metricConfigs[activeMetric].labelKey) }}
             </h3>
-            <p class="text-[11px] font-normal text-slate-500 app-dark:text-zinc-400">
-              Interactive telemetry analytics powered by ApexCharts
+            <p class="app-text-custom app-text-muted font-normal" style="--app-font-size: 11px">
+              {{ $t('features.dashboard.chart.description') }}
             </p>
           </div>
         </div>
@@ -166,7 +168,7 @@ const chartOptions = computed<ApexOptions>(() => {
         <div class="flex flex-wrap items-center gap-2">
           <!-- Metric Tab Pills -->
           <div
-            class="flex items-center rounded-lg bg-slate-100 p-0.5 text-xs font-medium app-dark:bg-zinc-800/80"
+            class="flex items-center rounded-lg bg-slate-100 p-0.5 app-text-xs font-medium app-dark:bg-zinc-800/80"
           >
             <button
               v-for="(config, key) in metricConfigs"
@@ -175,8 +177,8 @@ const chartOptions = computed<ApexOptions>(() => {
               class="rounded-md px-2.5 py-1 transition-all duration-200"
               :class="
                 activeMetric === key
-                  ? 'bg-white text-slate-900 shadow-xs font-semibold app-dark:bg-zinc-700 app-dark:text-white'
-                  : 'text-slate-600 hover:text-slate-900 app-dark:text-zinc-400 app-dark:hover:text-zinc-200'
+                  ? 'bg-white app-text-normal shadow-xs font-semibold app-dark:bg-zinc-700'
+                  : 'app-text-muted app-hover-text-normal'
               "
               @click="activeMetric = key as MetricType"
             >
@@ -186,7 +188,7 @@ const chartOptions = computed<ApexOptions>(() => {
 
           <!-- Timeframe Pills -->
           <div
-            class="hidden sm:flex items-center rounded-lg bg-slate-100 p-0.5 text-xs font-medium app-dark:bg-zinc-800/80"
+            class="hidden sm:flex items-center rounded-lg bg-slate-100 p-0.5 app-text-xs font-medium app-dark:bg-zinc-800/80"
           >
             <button
               v-for="tf in ['24h', '7d', '30d'] as TimeframeType[]"
@@ -196,7 +198,7 @@ const chartOptions = computed<ApexOptions>(() => {
               :class="
                 activeTimeframe === tf
                   ? 'bg-indigo-600 text-white font-semibold shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 app-dark:text-zinc-400 app-dark:hover:text-zinc-200'
+                  : 'app-text-muted app-hover-text-normal'
               "
               @click="activeTimeframe = tf"
             >
@@ -204,7 +206,13 @@ const chartOptions = computed<ApexOptions>(() => {
             </button>
           </div>
 
-          <Button icon="pi pi-ellipsis-v" severity="secondary" size="small" text class="p-1" />
+          <AppButton
+            icon="pi pi-ellipsis-v"
+            tone="secondary"
+            size="small"
+            appearance="text"
+            class="p-1"
+          />
         </div>
       </div>
     </template>
@@ -212,7 +220,7 @@ const chartOptions = computed<ApexOptions>(() => {
     <template #content>
       <div class="mt-3">
         <!-- Recharts / ApexCharts Main Area Chart -->
-        <VueApexCharts
+        <AppChart
           type="area"
           height="280"
           :options="chartOptions"
@@ -222,23 +230,29 @@ const chartOptions = computed<ApexOptions>(() => {
 
         <!-- Summary Footer Bar -->
         <div
-          class="mt-2 flex flex-wrap items-center justify-between border-t border-slate-100 pt-3 text-xs text-slate-500 app-dark:border-zinc-800 app-dark:text-zinc-400"
+          class="mt-2 flex flex-wrap items-center justify-between border-t border-slate-100 pt-3 app-text-xs app-text-muted app-dark:border-zinc-800"
         >
           <div class="flex items-center gap-4">
             <span class="flex items-center gap-1.5">
               <span class="h-2 w-2 rounded-full bg-emerald-500 inline-block" />
-              Live Stream Active
+              {{ $t('features.dashboard.chart.liveActive') }}
             </span>
-            <span class="hidden sm:inline">Interval: 2-Hour Aggregation</span>
+            <span class="hidden sm:inline">{{ $t('features.dashboard.chart.interval') }}</span>
           </div>
 
           <div class="flex items-center gap-3 font-medium">
-            <span>Peak: 1,480 {{ metricConfigs[activeMetric].unit }}</span>
+            <span
+              >{{ $t('features.dashboard.chart.peak') }}: 1,480
+              {{ metricConfigs[activeMetric].unit }}</span
+            >
             <span>•</span>
-            <span>Avg: 965 {{ metricConfigs[activeMetric].unit }}</span>
+            <span
+              >{{ $t('features.dashboard.chart.average') }}: 965
+              {{ metricConfigs[activeMetric].unit }}</span
+            >
           </div>
         </div>
       </div>
     </template>
-  </Card>
+  </AppCard>
 </template>

@@ -35,6 +35,10 @@ src/shared/
 
 Shared systems such as toast own their supporting stores, composables, services, translations, assets, and sections. Export supported use cases through the system `main.ts`. Shared code must not import from app or feature.
 
+## Shared UI facades
+
+Application and feature code consumes standardized UI from `src/shared/component/App*.vue` (for example `AppButton`, `AppInputText`, `AppDialog`, `AppTabs`, and `AppChart`). Facades expose only the props/variants used by project-approved patterns, while forwarding styling/accessibility attributes and supported slots. Keep direct PrimeVue/Apex wrapper imports inside these facades; keep PrimeVue installation in app config and toast service/rendering inside the toast system.
+
 ## Feature layer
 
 ```txt
@@ -43,6 +47,7 @@ src/feature/<feature-name>/
 ├── navigation.config.ts
 ├── views/<view-name>/
 │   ├── main.vue
+│   ├── component/           # optional view-only components
 │   ├── section/             # optional view-only sections
 │   ├── i18n/ lib/ asset/ composable/ store/ service/
 │   └── ...
@@ -50,7 +55,29 @@ src/feature/<feature-name>/
 └── ...
 ```
 
-Every feature owns its route and navigation declarations. The app router and layout import those declarations to compose the application. Features may use shared code and their own modules, but must not import app or other features. Keep view-only support inside the view; promote it to feature scope only when reused across views.
+Every feature owns its route and navigation declarations. The app router and layout import those declarations to compose the application. Features may use shared code and their own modules, but must not import app or other features.
+
+### View-first asset workflow
+
+- Before adding a view asset, inspect that view, its feature-level categories, and shared for an exact existing fit. Reuse a direct match; otherwise keep view-specific `component/`, `section/`, `i18n/`, `service/`, `lib/`, `asset/`, `composable/`, or `store/` support inside the view.
+- Create only support folders needed for actual files; do not scaffold empty folders.
+- During feature refactoring, compare views by responsibility and behavior. When at least two views clearly share the same behavior-safe use case/component/service, check for an existing feature-level equivalent or extract the common implementation into the matching feature category. Keep view-specific data and presentation in each view.
+- Do not promote superficial similarities or change behavior/API solely to force reuse; leave unclear candidates view-local.
+
+## Layered en/th translations
+
+- App shell messages live in `src/app/config/i18n/locales/{en,th}.ts`.
+- Global shared messages live in `src/shared/i18n/{en,th}.ts`; shared-system messages live beneath that system, such as `src/shared/toast/i18n/{en,th}.ts`.
+- Feature messages live in `src/feature/<feature>/i18n/{en,th}.ts`.
+- App owns its root message keys, shared messages are mounted under `shared.*`, and feature messages are mounted under `features.<feature>.*`.
+- Register each owner/module in both locale lists in `src/app/config/i18n/main.ts`. The composer merges nested trees, rejects duplicate leaf keys, and validates matching en/th key shapes.
+- Put a key with its owner; never overwrite another layer's message to change its text. Update both locale files and all consumers together.
+
+## Global typography
+
+Use `app-text-xs`, `app-text-sm`, `app-text-md`, `app-text-lg`, `app-text-xl`, `app-text-2xl`, or `app-text-3xl` for font size, and `app-text-normal`, `app-text-muted`, or `app-text-disabled` for neutral text roles. These utilities adapt to light/dark mode. Keep semantic colors for links, errors, statuses, and brand accents. A one-off size is set with `style="--app-font-size: 18px"` on an element with an `app-text-*` class; rem and em values are also supported. Do not use raw Tailwind font-size classes or arbitrary font-size values.
+
+Aside navigation uses only `app-text-sm` and `app-text-md`, without per-item custom-size overrides.
 
 ## Placement rules
 

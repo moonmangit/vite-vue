@@ -1,1 +1,1 @@
-import './google-sans.css'
+import './noto-sans-thai.css'

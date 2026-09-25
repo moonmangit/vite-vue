@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import Button from 'primevue/button'
-import Select from 'primevue/select'
-import Tag from 'primevue/tag'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import AppButton from '../../../../../shared/component/AppButton.vue'
+import AppSelect from '../../../../../shared/component/AppSelect.vue'
+import AppTag from '../../../../../shared/component/AppTag.vue'
 
 const timeframe = ref('24h')
-const timeframeOptions = [
-  { label: 'Last 24 Hours', value: '24h' },
-  { label: 'Last 7 Days', value: '7d' },
-  { label: 'Last 30 Days', value: '30d' },
-]
+const { t } = useI18n({ useScope: 'global' })
+const timeframeOptions = computed(() => [
+  { label: t('features.dashboard.timeframe.last24Hours'), value: '24h' },
+  { label: t('features.dashboard.timeframe.last7Days'), value: '7d' },
+  { label: t('features.dashboard.timeframe.last30Days'), value: '30d' },
+])
 
 const emit = defineEmits<{
   (e: 'refresh'): void
@@ -22,42 +24,47 @@ const emit = defineEmits<{
   >
     <div>
       <div class="flex items-center gap-2">
-        <h1 class="text-xl font-black tracking-tight text-slate-900 app-dark:text-white">
-          {{ $t('app.title') }}
+        <h1 class="app-text-xl app-text-normal font-black tracking-tight">
+          {{ $t('features.dashboard.page.title') }}
         </h1>
-        <Tag value="LIVE" severity="success" class="text-[10px] px-1.5 py-0.5 animate-pulse" />
+        <AppTag
+          value="LIVE"
+          tone="success"
+          class="app-text-custom px-1.5 py-0.5 animate-pulse"
+          style="--app-font-size: 10px"
+        />
       </div>
-      <p class="text-xs text-slate-500 app-dark:text-zinc-400">
-        {{ $t('app.subtitle') }}
+      <p class="app-text-xs app-text-muted">
+        {{ $t('features.dashboard.page.subtitle') }}
       </p>
     </div>
 
     <div class="flex flex-wrap items-center gap-2">
-      <Select
+      <AppSelect
         v-model="timeframe"
         :options="timeframeOptions"
         option-label="label"
         option-value="value"
         size="small"
         class="w-36"
-        aria-label="Timeframe"
+        :aria-label="$t('features.dashboard.timeframe.ariaLabel')"
       />
 
-      <Button
+      <AppButton
         icon="pi pi-refresh"
-        :label="$t('actions.sync')"
-        severity="secondary"
+        :label="$t('features.dashboard.actions.sync')"
+        tone="secondary"
         size="small"
-        class="text-xs"
+        class="app-text-xs"
         @click="emit('refresh')"
       />
 
-      <Button
+      <AppButton
         icon="pi pi-download"
-        :label="$t('actions.report')"
-        severity="primary"
+        :label="$t('features.dashboard.actions.report')"
+        tone="primary"
         size="small"
-        class="text-xs font-semibold"
+        class="app-text-xs font-semibold"
       />
     </div>
   </div>

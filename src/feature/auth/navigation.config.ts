@@ -6,7 +6,7 @@ export const authNavigation: NavigationGroup[] = [
     items: [
       {
         id: 'login-view',
-        labelKey: 'nav.loginView',
+        labelKey: 'features.auth.navigation.loginView',
         icon: 'pi pi-lock',
         to: '/login',
       },

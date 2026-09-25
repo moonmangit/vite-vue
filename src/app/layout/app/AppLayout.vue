@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { useDark, useStorage, useToggle } from '@vueuse/core'
-import Toast from 'primevue/toast'
-import { useToast } from 'primevue/usetoast'
 import { watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterView, useRouter } from 'vue-router'
@@ -9,39 +7,15 @@ import { setAppLocale, type Locale } from '../../../app/config/i18n/main'
 import { useAuthStore } from '../../../feature/auth/store/auth'
 import { authNavigation } from '../../../feature/auth/navigation.config'
 import { dashboardNavigation } from '../../../feature/dashboard/navigation.config'
+import { devNavigation } from '../../../feature/dev/navigation.config'
 import type { NavigationGroup } from '../../../shared/navigation/main'
-import { useToastStore } from '../../../shared/toast/main'
+import { AppToastOutlet } from '../../../shared/toast/main'
 import SidebarNavSection from './SidebarNavSection.vue'
 import TopNavSection from './TopNavSection.vue'
 
 const router = useRouter()
 const { locale } = useI18n()
 const authStore = useAuthStore()
-
-const primeToast = useToast()
-const toastStore = useToastStore()
-
-// Watch Pinia Toast Store queue and flush to PrimeVue ToastService
-watch(
-  () => toastStore.queue.length,
-  () => {
-    while (toastStore.queue.length > 0) {
-      const item = toastStore.dequeue()
-      if (item) {
-        primeToast.add({
-          severity: item.severity || 'info',
-          summary: item.summary,
-          detail: item.detail,
-          // When sticky is true, omit `life` so the toast stays until dismissed
-          life: item.sticky ? undefined : item.life,
-          closable: item.closable,
-          group: item.group,
-        })
-      }
-    }
-  },
-  { immediate: true },
-)
 
 const isSidebarCollapsed = useStorage('app_sidebar_collapsed', false)
 
@@ -54,6 +28,7 @@ const sidebarGroups = mergeNavigationGroups([
   ...dashboardNavigation.slice(0, 2),
   ...authNavigation,
   ...dashboardNavigation.slice(2),
+  ...(import.meta.env.DEV ? devNavigation : []),
 ])
 
 function mergeNavigationGroups(groups: NavigationGroup[]): NavigationGroup[] {
@@ -97,10 +72,10 @@ watch(
 </script>
 
 <template>
-  <Toast />
+  <AppToastOutlet />
 
   <div
-    class="h-screen w-screen overflow-hidden flex flex-col bg-slate-50 text-slate-950 transition-colors app-dark:bg-zinc-950 app-dark:text-zinc-50"
+    class="h-screen w-screen overflow-hidden flex flex-col bg-slate-50 app-text-normal transition-colors app-dark:bg-zinc-950"
   >
     <!-- Layout Section: Top Navigation Bar -->
     <TopNavSection

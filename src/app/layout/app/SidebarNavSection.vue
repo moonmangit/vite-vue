@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import Button from 'primevue/button'
 import type { NavigationGroup } from '../../../shared/navigation/main'
+import AppButton from '../../../shared/component/AppButton.vue'
 import SidebarNavItemSection from './SidebarNavItemSection.vue'
 
 defineProps<{
@@ -27,7 +27,7 @@ const emit = defineEmits<{
         <!-- Group Header Title (Expanded Mode) -->
         <span
           v-if="!isSidebarCollapsed"
-          class="block px-2 mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 app-dark:text-zinc-500 select-none"
+          class="block px-2 mb-2 app-text-sm app-text-disabled font-bold uppercase tracking-wider select-none"
         >
           {{ $t(group.titleKey) }}
         </span>
@@ -52,17 +52,17 @@ const emit = defineEmits<{
 
     <!-- Sidebar Footer -->
     <div
-      class="h-12 shrink-0 border-t border-slate-200/90 p-3 app-dark:border-zinc-800/80 flex items-center justify-between text-[11px] text-slate-400 app-dark:text-zinc-500"
+      class="h-12 shrink-0 border-t border-slate-200/90 p-3 app-dark:border-zinc-800/80 flex items-center justify-between app-text-sm app-text-muted"
     >
-      <span v-if="!isSidebarCollapsed" class="font-mono text-[10px] font-medium">
+      <span v-if="!isSidebarCollapsed" class="font-mono app-text-sm font-medium">
         v2.4.0 • Enterprise
       </span>
-      <Button
+      <AppButton
         :icon="isSidebarCollapsed ? 'pi pi-angle-double-right' : 'pi pi-angle-double-left'"
-        severity="secondary"
+        tone="secondary"
         size="small"
-        text
-        class="p-1 text-slate-500 hover:text-slate-900 app-dark:text-zinc-400 app-dark:hover:text-white"
+        appearance="text"
+        class="p-1 app-text-sm app-text-muted app-hover-text-normal"
         title="Toggle Sidebar"
         @click="emit('toggleSidebar')"
       />

@@ -27,6 +27,7 @@ src/
     ├── views/
     │   └── <view-name>/
     │       ├── main.vue            # Required route page entry
+    │       ├── component/           # Optional, view-only components
     │       ├── section/            # Optional view-only sections
     │       ├── i18n/ lib/ asset/ composable/ store/ service/
     │       └── ...                 # Other view-only support files
@@ -46,7 +47,10 @@ src/
 
 - App layouts live in `src/app/layout/<layout-name>/`.
 - Feature route pages live in `src/feature/<feature>/views/<view>/main.vue`.
-- View-only sections live under that view's `section/`; layout-only sections stay with their layout.
+- View-only components, sections, i18n, services, helpers, assets, composables, and stores live under that view in matching support folders as needed. Create only folders containing real view-owned files.
+- Check the view, feature, and shared scopes for an exact existing asset before creating a new one. Otherwise start view-specific assets in the view.
+- During feature refactoring, promote a behavior-safe common use case/component/service to feature scope when at least two views clearly share it; reuse an existing feature asset when available.
+- Layout-only sections stay with their layout.
 - Reusable UI belongs to the feature's `component/` or global `src/shared/component/`, based on consumers.
 
 ## Checks

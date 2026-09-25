@@ -1,7 +1,29 @@
 import { useToast } from 'primevue/usetoast'
+import { useI18n } from 'vue-i18n'
 import { useToastStore, type ToastOptions, type ToastSeverity } from '../store/main'
 
 export function useAppToast() {
+  const fallbackSummaries: Record<ToastSeverity, string> = {
+    success: 'Success',
+    info: 'Information',
+    warn: 'Warning',
+    error: 'Error',
+    contrast: 'Notice',
+    secondary: 'Notice',
+  }
+  let translate: ((key: string) => string) | undefined
+
+  try {
+    const { t } = useI18n({ useScope: 'global' })
+    translate = (key) => t(key)
+  } catch {
+    translate = undefined
+  }
+
+  function defaultSummary(severity: ToastSeverity) {
+    return translate?.(`shared.toast.${severity}`) ?? fallbackSummaries[severity]
+  }
+
   let primeToast: ReturnType<typeof useToast> | null = null
   try {
     primeToast = useToast()
@@ -24,7 +46,7 @@ export function useAppToast() {
     const severity = options.severity || 'info'
     const payload = {
       severity,
-      summary: options.summary,
+      summary: options.summary || defaultSummary(severity),
       detail: options.detail,
       life: options.life ?? defaultLife[severity],
       sticky: options.sticky,
@@ -40,39 +62,43 @@ export function useAppToast() {
     }
   }
 
-  function success(summary: string, detail?: string, options?: Partial<ToastOptions>) {
+  function success(summary?: string, detail?: string, options?: Partial<ToastOptions>) {
+    const severity = options?.severity ?? 'success'
     show({
-      severity: 'success',
-      summary: summary || 'Success',
-      detail,
       ...options,
+      severity,
+      summary: summary || options?.summary || defaultSummary(severity),
+      detail: detail ?? options?.detail,
     })
   }
 
-  function info(summary: string, detail?: string, options?: Partial<ToastOptions>) {
+  function info(summary?: string, detail?: string, options?: Partial<ToastOptions>) {
+    const severity = options?.severity ?? 'info'
     show({
-      severity: 'info',
-      summary: summary || 'Information',
-      detail,
       ...options,
+      severity,
+      summary: summary || options?.summary || defaultSummary(severity),
+      detail: detail ?? options?.detail,
     })
   }
 
-  function warning(summary: string, detail?: string, options?: Partial<ToastOptions>) {
+  function warning(summary?: string, detail?: string, options?: Partial<ToastOptions>) {
+    const severity = options?.severity ?? 'warn'
     show({
-      severity: 'warn',
-      summary: summary || 'Warning',
-      detail,
       ...options,
+      severity,
+      summary: summary || options?.summary || defaultSummary(severity),
+      detail: detail ?? options?.detail,
     })
   }
 
-  function error(summary: string, detail?: string, options?: Partial<ToastOptions>) {
+  function error(summary?: string, detail?: string, options?: Partial<ToastOptions>) {
+    const severity = options?.severity ?? 'error'
     show({
-      severity: 'error',
-      summary: summary || 'Error Occurred',
-      detail,
       ...options,
+      severity,
+      summary: summary || options?.summary || defaultSummary(severity),
+      detail: detail ?? options?.detail,
     })
   }
 

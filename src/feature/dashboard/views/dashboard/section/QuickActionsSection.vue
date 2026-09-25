@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import Button from 'primevue/button'
-import Card from 'primevue/card'
+import type { DashboardQuickAction } from '../../../lib/dashboardData'
+import AppButton from '../../../../../shared/component/AppButton.vue'
+import AppCard from '../../../../../shared/component/AppCard.vue'
 
 export interface QuickAction {
-  label: string
-  description: string
+  key: DashboardQuickAction
   icon: string
 }
 
@@ -13,42 +13,40 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'execute', actionLabel: string): void
+  (e: 'execute', action: DashboardQuickAction): void
 }>()
 </script>
 
 <template>
-  <Card>
+  <AppCard>
     <template #title>
       <div class="flex items-center gap-2">
-        <i class="pi pi-bolt text-primary-600 text-sm" />
-        <span
-          class="text-xs font-bold uppercase tracking-wider text-slate-700 app-dark:text-zinc-300"
-        >
-          Quick Operations
+        <i class="pi pi-bolt app-text-sm text-primary-600" />
+        <span class="app-text-xs app-text-normal font-bold uppercase tracking-wider">
+          {{ $t('features.dashboard.quickActions.title') }}
         </span>
       </div>
     </template>
 
     <template #content>
       <div class="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <Button
+        <AppButton
           v-for="act in actions"
-          :key="act.label"
-          severity="secondary"
+          :key="act.key"
+          tone="secondary"
           size="small"
           class="flex flex-col items-center justify-center p-3 text-center transition hover:scale-[1.02]"
-          @click="emit('execute', act.label)"
+          @click="emit('execute', act.key)"
         >
-          <i :class="[act.icon, 'text-lg mb-1 text-primary-600']" />
-          <span class="text-xs font-bold text-slate-800 app-dark:text-zinc-200">
-            {{ act.label }}
+          <i :class="[act.icon, 'app-text-lg mb-1 text-primary-600']" />
+          <span class="app-text-xs app-text-normal font-bold">
+            {{ $t(`features.dashboard.quickActions.${act.key}.label`) }}
           </span>
-          <span class="text-[10px] text-slate-400 app-dark:text-zinc-500 font-normal">
-            {{ act.description }}
+          <span class="app-text-custom app-text-muted font-normal" style="--app-font-size: 10px">
+            {{ $t(`features.dashboard.quickActions.${act.key}.description`) }}
           </span>
-        </Button>
+        </AppButton>
       </div>
     </template>
-  </Card>
+  </AppCard>
 </template>

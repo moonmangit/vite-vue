@@ -1,12 +1,19 @@
 export interface MetricItem {
   id: string
-  title: string
+  titleKey: string
   value: string
   trend: string
   trendType: 'up' | 'down' | 'neutral'
   icon: string
+  subtitleKey: string
+}
+
+export interface DashboardMetric extends Omit<MetricItem, 'titleKey' | 'subtitleKey'> {
+  title: string
   subtitle: string
 }
+
+export type DashboardQuickAction = 'purgeEdgeCache' | 'scalePods' | 'databaseDump' | 'rotateKeys'
 
 export interface ActivityRecord {
   id: string
@@ -29,39 +36,39 @@ export interface SystemNode {
 export const mockMetrics: MetricItem[] = [
   {
     id: 'm1',
-    title: 'Monthly Revenue',
+    titleKey: 'features.dashboard.metrics.monthlyRevenue.title',
     value: '$148,920.00',
     trend: '+14.2%',
     trendType: 'up',
     icon: 'pi pi-dollar',
-    subtitle: 'vs. $130,400 last month',
+    subtitleKey: 'features.dashboard.metrics.monthlyRevenue.subtitle',
   },
   {
     id: 'm2',
-    title: 'Active Sessions',
+    titleKey: 'features.dashboard.metrics.activeSessions.title',
     value: '18,490',
     trend: '+8.7%',
     trendType: 'up',
     icon: 'pi pi-users',
-    subtitle: '512 online concurrent users',
+    subtitleKey: 'features.dashboard.metrics.activeSessions.subtitle',
   },
   {
     id: 'm3',
-    title: 'Req Throughput',
+    titleKey: 'features.dashboard.metrics.requestThroughput.title',
     value: '1.84M /s',
     trend: '-0.3%',
     trendType: 'down',
     icon: 'pi pi-bolt',
-    subtitle: 'Avg latency 14ms (p99: 42ms)',
+    subtitleKey: 'features.dashboard.metrics.requestThroughput.subtitle',
   },
   {
     id: 'm4',
-    title: 'System Health',
+    titleKey: 'features.dashboard.metrics.systemHealth.title',
     value: '99.98%',
     trend: 'Stable',
     trendType: 'neutral',
     icon: 'pi pi-shield',
-    subtitle: '0 critical incidents (24h)',
+    subtitleKey: 'features.dashboard.metrics.systemHealth.subtitle',
   },
 ]
 

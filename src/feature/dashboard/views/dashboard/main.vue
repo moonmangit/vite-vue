@@ -1,38 +1,43 @@
 <script setup lang="ts">
-import { useToast } from 'primevue/usetoast'
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useAppToast } from '../../../../shared/toast/main'
 import { mockActivities, mockChartSeries, mockMetrics, mockNodes } from '../../lib/dashboardData'
+import type { DashboardQuickAction } from '../../lib/dashboardData'
 import AnalyticsChartSection from './section/AnalyticsChartSection.vue'
 import DashboardHeaderSection from './section/DashboardHeaderSection.vue'
 import MetricsGridSection from './section/MetricsGridSection.vue'
-import QuickActionsSection from './section/QuickActionsSection.vue'
+import QuickActionsSection, { type QuickAction } from './section/QuickActionsSection.vue'
 import RecentActivitySection from './section/RecentActivitySection.vue'
 import SystemStatusSection from './section/SystemStatusSection.vue'
 
-const toast = useToast()
+const toast = useAppToast()
+const { t } = useI18n({ useScope: 'global' })
 
 const throughputSeries = [420, 680, 950, 1240, 1100, 1380, 1420, 1290, 1350, 1480]
 
+const localizedMetrics = computed(() =>
+  mockMetrics.map((metric) => ({
+    ...metric,
+    title: t(metric.titleKey),
+    subtitle: t(metric.subtitleKey),
+  })),
+)
+
 const quickActions = [
-  { label: 'Purge Edge Cache', description: 'Invalidate CDN', icon: 'pi pi-trash' },
-  { label: 'Scale Pods', description: 'Auto-scale k8s', icon: 'pi pi-sliders-h' },
-  { label: 'DB Dump', description: 'Trigger snapshot', icon: 'pi pi-database' },
-  { label: 'Rotate Keys', description: 'Vault secrets', icon: 'pi pi-key' },
-]
+  { key: 'purgeEdgeCache', icon: 'pi pi-trash' },
+  { key: 'scalePods', icon: 'pi pi-sliders-h' },
+  { key: 'databaseDump', icon: 'pi pi-database' },
+  { key: 'rotateKeys', icon: 'pi pi-key' },
+] satisfies QuickAction[]
 
 function handleRefresh() {
-  toast.add({
-    severity: 'success',
-    summary: 'Data Synchronized',
-    detail: 'Dashboard metrics and node telemetry updated.',
-    life: 2500,
-  })
+  toast.success(undefined, t('features.dashboard.toast.syncedDetail'), { life: 2500 })
 }
 
-function handleExecuteAction(actionLabel: string) {
-  toast.add({
-    severity: 'info',
-    summary: 'Operation Triggered',
-    detail: `Executed action: ${actionLabel}`,
+function handleExecuteAction(action: DashboardQuickAction) {
+  const actionLabel = t(`features.dashboard.quickActions.${action}.label`)
+  toast.info(undefined, t('features.dashboard.toast.actionExecuted', { action: actionLabel }), {
     life: 2500,
   })
 }
@@ -44,7 +49,7 @@ function handleExecuteAction(actionLabel: string) {
     <DashboardHeaderSection @refresh="handleRefresh" />
 
     <!-- Co-located View Section: KPI Metric Cards Grid -->
-    <MetricsGridSection :metrics="mockMetrics" />
+    <MetricsGridSection :metrics="localizedMetrics" />
 
     <!-- Main Grid Content -->
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-12">

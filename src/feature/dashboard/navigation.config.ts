@@ -6,7 +6,7 @@ export const dashboardNavigation: NavigationGroup[] = [
     items: [
       {
         id: 'dashboard',
-        labelKey: 'nav.dashboard',
+        labelKey: 'features.dashboard.navigation.dashboard',
         icon: 'pi pi-th-large',
         to: '/',
         statusState: 'notify',
@@ -14,38 +14,38 @@ export const dashboardNavigation: NavigationGroup[] = [
       },
       {
         id: 'analytics-parent',
-        labelKey: 'nav.analytics',
+        labelKey: 'features.dashboard.navigation.analytics',
         icon: 'pi pi-chart-line',
         children: [
           {
             id: 'realtime-metrics',
-            label: 'Realtime Telemetry',
+            labelKey: 'features.dashboard.navigation.realtimeTelemetry',
             icon: 'pi pi-bolt',
             to: '/analytics/realtime',
           },
           {
             id: 'data-warehousing-level2',
-            label: 'Data Warehousing',
+            labelKey: 'features.dashboard.navigation.dataWarehousing',
             icon: 'pi pi-database',
             statusState: 'notify',
             children: [
               {
                 id: 'bq-realtime-level3',
-                label: 'BigQuery Stream',
+                labelKey: 'features.dashboard.navigation.bigQueryStream',
                 icon: 'pi pi-cloud',
                 to: '/analytics/bigquery',
                 badge: { value: '99.9%', severity: 'success' },
               },
               {
                 id: 'snowflake-level3',
-                label: 'Snowflake Storage',
+                labelKey: 'features.dashboard.navigation.snowflakeStorage',
                 icon: 'pi pi-box',
                 to: '/snowflake',
                 statusState: 'muted',
               },
               {
                 id: 'clickhouse-level3',
-                label: 'ClickHouse Sync',
+                labelKey: 'features.dashboard.navigation.clickHouseSync',
                 icon: 'pi pi-sync',
                 to: '/clickhouse',
                 statusState: 'loading',
@@ -54,7 +54,7 @@ export const dashboardNavigation: NavigationGroup[] = [
           },
           {
             id: 'historical-reports',
-            label: 'Historical Reports',
+            labelKey: 'features.dashboard.navigation.historicalReports',
             icon: 'pi pi-file',
             to: '/reports',
             statusState: 'muted',
@@ -68,30 +68,30 @@ export const dashboardNavigation: NavigationGroup[] = [
     items: [
       {
         id: 'cluster-nodes-level1',
-        labelKey: 'nav.clusterNodes',
+        labelKey: 'features.dashboard.navigation.clusterNodes',
         icon: 'pi pi-server',
         children: [
           {
             id: 'k8s-regional-level2',
-            label: 'Kubernetes Pods',
+            labelKey: 'features.dashboard.navigation.kubernetesPods',
             icon: 'pi pi-box',
             children: [
               {
                 id: 'node-us-east-level3',
-                label: 'US-East (Prod Cluster)',
+                labelKey: 'features.dashboard.navigation.usEast',
                 icon: 'pi pi-globe',
                 to: '/nodes/us-east',
               },
               {
                 id: 'node-eu-west-level3',
-                label: 'EU-West (Staging Cluster)',
+                labelKey: 'features.dashboard.navigation.euWest',
                 icon: 'pi pi-globe',
                 to: '/nodes/eu-west',
                 badge: { value: 'WARN', severity: 'warn' },
               },
               {
                 id: 'node-ap-south-level3',
-                label: 'AP-South (Dev Cluster)',
+                labelKey: 'features.dashboard.navigation.apSouth',
                 icon: 'pi pi-globe',
                 to: '/nodes/ap-south',
               },
@@ -101,7 +101,7 @@ export const dashboardNavigation: NavigationGroup[] = [
       },
       {
         id: 'security-audit',
-        labelKey: 'nav.securityAudit',
+        labelKey: 'features.dashboard.navigation.securityAudit',
         icon: 'pi pi-shield',
         statusState: 'notify',
         badge: { value: '3 Alerts', severity: 'danger', pulse: true },
@@ -113,18 +113,18 @@ export const dashboardNavigation: NavigationGroup[] = [
     items: [
       {
         id: 'system-settings',
-        labelKey: 'nav.systemSettings',
+        labelKey: 'features.dashboard.navigation.systemSettings',
         icon: 'pi pi-cog',
         children: [
           {
             id: 'general-settings',
-            label: 'General Preferences',
+            labelKey: 'features.dashboard.navigation.generalPreferences',
             icon: 'pi pi-sliders-h',
             to: '/settings/general',
           },
           {
             id: 'i18n-settings',
-            label: 'Language & Locale',
+            labelKey: 'features.dashboard.navigation.languageLocale',
             icon: 'pi pi-language',
             to: '/settings/i18n',
           },
