@@ -1,75 +1,41 @@
 ---
 name: create-view
-description: 'Initialize and scaffold page views and co-located view sections in the project following layered architecture boundaries, singular folder naming, design system rules, and co-located view subfolders.'
+description: 'Create feature route pages at views/<view-name>/main.vue with view-owned supporting code and feature-owned route/navigation configuration.'
 ---
 
-# 1. Architectural Classification & Directory Co-location
+# View placement
 
-Views and Layouts are organized into dedicated subfolders where the primary component (`*View.vue` or `*Layout.vue`) and its single-use `*Section.vue` components live together without separate `section/` folders:
+Every route view lives at `src/feature/<feature-name>/views/<view-name>/main.vue`:
 
 ```txt
-src/app/layout/
-  app/
-    AppLayout.vue
-    TopNavSection.vue
-    SidebarNavSection.vue
-  empty/
-    EmptyLayout.vue
-
-src/feature/<featureName>/view/
-  login/
-    LoginView.vue
-    WelcomeSection.vue
-  dashboard/
-    DashboardView.vue
-    DashboardHeaderSection.vue
-    MetricsGridSection.vue
+src/feature/dashboard/
+├── route.config.ts
+├── navigation.config.ts
+└── views/
+    └── dashboard/
+        ├── main.vue
+        ├── section/       # single-view sections
+        ├── i18n/          # view-only translations
+        ├── lib/           # view-only helpers
+        ├── asset/         # view-only assets
+        ├── composable/    # view-only composables
+        ├── store/         # view-only state
+        └── service/       # view-only services
 ```
 
----
+Create only supporting folders needed by that view. Put multi-view feature code in the feature root. Shared UI used across app/features belongs in `src/shared/component/`.
 
-# 2. Placement Guidelines
+# Routing and navigation
 
-- **Feature Views (`src/feature/<featureName>/view/<viewSlug>/<ViewName>View.vue`):**
-  - Place view files inside a dedicated subfolder under `view/` named in lowercase/kebab-case (e.g. `view/login/LoginView.vue`, `view/dashboard/DashboardView.vue`).
-- **Co-located Sections (`src/feature/<featureName>/view/<viewSlug>/<SectionName>Section.vue`):**
-  - When a view file grows too long (~150-200 lines), extract single-use section components named `*Section.vue` directly into the same view subfolder. Do NOT create a separate `section/` directory.
+- Declare route records in the owning feature's `route.config.ts`.
+- Declare menu entries in the owning feature's `navigation.config.ts`.
+- App router/layout composition imports these declarations; do not register feature pages directly in a central route table or hardcode feature navigation in an app layout.
+- Feature views may import only their feature and `src/shared/*`, never app or other features.
 
----
+# Layouts and sections
 
-# 3. Layer Boundary Rules
+App layouts remain under `src/app/layout/<layout-name>/`. Keep layout-only sections with that layout. View-only sections belong in the view's `section/` support folder.
 
-- **Feature Views & Sections:** Can import from `src/shared/*` and local feature modules. MUST NOT import from `src/app/*` or other features.
-- **App Views & Layout Sections:** Can import from `src/app/*`, `src/shared/*`, and `src/feature/*`.
+# Verify
 
----
-
-# 4. Router Registration
-
-Register the view component in `src/app/config/router/routes.ts` under appropriate layout children:
-
-```ts
-import DashboardView from '../../../feature/dashboard/view/dashboard/DashboardView.vue'
-
-export const routes: RouteRecordRaw[] = [
-  {
-    path: '/',
-    component: AppLayout,
-    children: [
-      {
-        path: '',
-        name: 'home',
-        component: DashboardView,
-      },
-    ],
-  },
-]
-```
-
----
-
-# 5. Verification Checklist
-
-1. **Format Check:** `pnpm format`
-2. **Lint & Boundary Check:** `pnpm lint`
-3. **Build Check:** `pnpm build` (`vue-tsc -b && vite build`)
+Run `pnpm check:architecture`, `pnpm lint`, and `pnpm build`.

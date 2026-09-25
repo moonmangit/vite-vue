@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import StatCard from '../../../../shared/component/StatCard.vue'
-import type { MetricItem } from '../../lib/dashboardData'
+import StatCard from '../../../../../shared/component/StatCard.vue'
+import type { MetricItem } from '../../../lib/dashboardData'
 
 defineProps<{
   metrics: MetricItem[]

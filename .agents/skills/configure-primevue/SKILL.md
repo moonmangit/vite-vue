@@ -1,55 +1,29 @@
 ---
 name: configure-primevue
-description: 'Configure PrimeVue components via TypeScript theme presets (definePreset) in src/app/config/primevue/preset.ts.'
+description: 'Configure the app-wide PrimeVue theme and plugin in the app configuration module while keeping feature and shared layers independent of app setup.'
 ---
 
-# 1. PrimeVue Base Configuration Architecture
+# PrimeVue ownership
 
-This project uses **PrimeVue v4** in **Styled Mode** with `@primeuix/themes` (Aura preset) and **Tailwind CSS v4**.
+The project uses PrimeVue v4 styled mode with `@primeuix/themes` Aura and Tailwind CSS v4. App-wide installation belongs in `src/app/config/primevue/main.ts`; the theme preset stays in `src/app/config/primevue/preset.ts` and design tokens are owned by `src/app/config/designTokens/`.
 
-Theme customization is handled via **TypeScript Theme Preset (`src/app/config/primevue/preset.ts`)**.
-
----
-
-# 2. TypeScript Theme Preset (`src/app/config/primevue/preset.ts`)
-
-Use `definePreset` inside `src/app/config/primevue/preset.ts` to customize semantic palettes and component design tokens:
+Every app configuration module exports through its required `main.ts`. Keep preset support files beside the owning config; do not put third-party app setup in feature or shared modules.
 
 ```ts
 import { definePreset } from '@primeuix/themes'
 import Aura from '@primeuix/themes/aura'
-import {
-  dangerPalette,
-  helpPalette,
-  infoPalette,
-  primaryPalette,
-  secondaryPalette,
-  successPalette,
-  surfacePalette,
-  warningPalette,
-} from '../designTokens'
+import { primaryPalette, surfacePalette } from '../designTokens/main'
 
 export const AppPreset = definePreset(Aura, {
   semantic: {
     primary: primaryPalette,
     surface: surfacePalette,
-    secondary: secondaryPalette,
-    success: successPalette,
-    info: infoPalette,
-    warn: warningPalette,
-    danger: dangerPalette,
-    help: helpPalette,
   },
 })
 ```
 
----
+Prefer preset tokens and Tailwind utilities over broad custom CSS. Preserve `.app-dark` behavior. Shared and feature modules may consume PrimeVue components but must not import the app configuration.
 
-# 3. Modification Workflow & Best Practices
+# Verify
 
-1. **Keep Configuration Clean:** Prefer base PrimeVue Aura preset design tokens and Tailwind utility classes over heavy custom CSS overrides.
-2. **Preserve Dark Mode:** Ensure color adaptations support both light mode and dark mode (`.app-dark`).
-3. **Verification Checklist:**
-   - Format check: `pnpm format:check`
-   - Lint check: `pnpm lint`
-   - Build check: `pnpm build` (`vue-tsc -b && vite build`)
+Run `pnpm check:architecture`, `pnpm lint`, and `pnpm build`.

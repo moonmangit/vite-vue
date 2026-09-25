@@ -1,25 +1,58 @@
-/src
-	/app
-		/view
-		/layout
-		/component
-		...main configuration of lib...
-	/shared
-		/component
-			/button
-			/input
-			/form
-			...
-		/composable
-		/lib
-		...
-	/feature
-		/feature-a
-			/view
-			/component
-			...
-		/feature-b
-			/view
-			/component
-			...
-			
+# Project Structure
+
+```txt
+src/
+├── main.ts                         # Vite entry point
+├── app/
+│   ├── App.vue
+│   ├── config/
+│   │   ├── main.ts                 # Exports app-wide configuration
+│   │   └── <config-name>/
+│   │       ├── main.ts             # Required config entry point
+│   │       └── ...                 # Config-only support files
+│   └── layout/<layout-name>/       # App layouts and layout-only sections
+├── shared/
+│   ├── <system-name>/
+│   │   ├── main.ts                 # Required public use-case entry point
+│   │   ├── composable/             # Optional system-only support
+│   │   ├── store/
+│   │   ├── service/
+│   │   └── ...
+│   ├── component/                  # Global reusable UI
+│   ├── i18n/ section/ lib/ asset/ composable/ store/ service/
+│   └── ...                         # Optional global shared categories
+└── feature/<feature-name>/
+    ├── route.config.ts             # Required feature-owned route records
+    ├── navigation.config.ts        # Required feature-owned menu entries
+    ├── views/
+    │   └── <view-name>/
+    │       ├── main.vue            # Required route page entry
+    │       ├── section/            # Optional view-only sections
+    │       ├── i18n/ lib/ asset/ composable/ store/ service/
+    │       └── ...                 # Other view-only support files
+    ├── component/ i18n/ section/ lib/ asset/ composable/ store/ service/
+    └── ...                         # Optional feature-wide support
+```
+
+## Ownership and imports
+
+- `shared` code is available to both `app` and every feature. Shared code may depend only on shared code and external libraries.
+- A feature may depend on its own feature and shared; cross-feature and feature-to-app imports are forbidden.
+- The app layer owns application setup and composes feature route/navigation configs with app layouts.
+- Keep support code at the narrowest scope that uses it: a view, a feature, a shared system, or global shared.
+- Shared systems expose supported use cases from their `main.ts`; system-only support files stay inside that system.
+
+## Layout, view, section, component
+
+- App layouts live in `src/app/layout/<layout-name>/`.
+- Feature route pages live in `src/feature/<feature>/views/<view>/main.vue`.
+- View-only sections live under that view's `section/`; layout-only sections stay with their layout.
+- Reusable UI belongs to the feature's `component/` or global `src/shared/component/`, based on consumers.
+
+## Checks
+
+```sh
+pnpm check:architecture
+pnpm lint
+pnpm build
+```

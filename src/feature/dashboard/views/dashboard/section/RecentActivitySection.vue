@@ -2,8 +2,8 @@
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import InputText from 'primevue/inputtext'
-import StatusBadge from '../../../../shared/component/StatusBadge.vue'
-import type { ActivityRecord } from '../../lib/dashboardData'
+import StatusBadge from '../../../../../shared/component/StatusBadge.vue'
+import type { ActivityRecord } from '../../../lib/dashboardData'
 
 defineProps<{
   auditLogs: ActivityRecord[]

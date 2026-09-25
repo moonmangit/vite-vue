@@ -1,44 +1,51 @@
 ---
 name: create-feature
-description: 'Scaffold, organize, and place new features within project domain boundaries while enforcing layered architecture, singular folder conventions, co-located view subfolders, and ESLint boundary rules.'
+description: 'Create feature modules that follow the project convention: owned routes and navigation, views/main.vue pages, local supporting code, and shared-only dependencies.'
 ---
 
-# 1. Standard Feature Directory Structure
+# Feature structure
 
-Every feature under `src/feature/<featureName>/` follows singular directory names, with views housed inside specific view subfolders alongside their co-located section components:
+Create each domain under `src/feature/<feature-name>/`. Every feature must own its route and navigation declarations:
 
 ```txt
-src/feature/<featureName>/
-├── component/        # Reusable domain UI components (e.g. LoginForm.vue)
-├── lib/              # Domain services, API calls, helpers (e.g. dashboardData.ts)
-├── store/            # Feature Pinia state management (e.g. auth.ts)
-├── view/             # Route page subfolders
-│   ├── login/
-│   │   ├── LoginView.vue
-│   │   └── WelcomeSection.vue
-│   └── dashboard/
-│       ├── DashboardView.vue
-│       ├── DashboardHeaderSection.vue
-│       └── MetricsGridSection.vue
-└── assets/           # Feature static media (optional)
+src/feature/<feature-name>/
+├── route.config.ts
+├── navigation.config.ts
+├── views/
+│   └── <view-name>/
+│       ├── main.vue
+│       ├── section/       # optional, view-only sections
+│       ├── i18n/          # optional, view-only translations
+│       ├── lib/           # optional, view-only helpers
+│       ├── asset/         # optional, view-only assets
+│       ├── composable/    # optional, view-only composables
+│       ├── store/         # optional, view-only state
+│       └── service/       # optional, view-only services
+├── component/             # optional feature-wide UI
+├── i18n/                  # optional feature-wide translations
+├── lib/                   # optional feature-wide helpers
+├── asset/                 # optional feature-wide assets
+├── composable/            # optional feature-wide composables
+├── store/                 # optional feature-wide state
+└── service/               # optional feature-wide services
 ```
 
-> ⚠️ **CRITICAL:** Always use singular directory names (`component`, `lib`, `store`, `view`). Do NOT create separate `section/` folders; co-locate `*Section.vue` files directly inside their view subfolder.
+Only create support folders that have a real owner/use. Keep view-specific code inside its view folder; promote it to the feature root only when multiple views use it.
 
----
+# Ownership and imports
 
-# 2. Layer Boundary Rules
+- Feature code may import from its own feature and `src/shared/*`.
+- Features must not import app code or another feature.
+- Put reusable systems/components used by both app and features under `src/shared/`.
+- The app composition layer may import feature `route.config.ts` and `navigation.config.ts` to register feature-owned declarations.
+- Add shared feature-independent types under shared when both app and features need them.
 
-| Layer                                 | Can Import From                                                | MUST NOT Import From                                   |
-| :------------------------------------ | :------------------------------------------------------------- | :----------------------------------------------------- |
-| **`feature` (`src/feature/<name>/`)** | `src/shared/*` and own feature (`../component/*`, `./*`, etc.) | `src/app/*` or other features (`src/feature/<other>/`) |
-| **`shared` (`src/shared/`)**          | `src/shared/*` only                                            | `src/app/*` or any `src/feature/*`                     |
-| **`app` (`src/app/`)**                | `src/app/*`, `src/shared/*`, `src/feature/*`                   | None                                                   |
+# Integration
 
----
+- Export route records from `route.config.ts`; app router config composes them under the appropriate app layout.
+- Export navigation groups/items from `navigation.config.ts`; app layout composes them without owning feature menu details.
+- Add new module categories only when needed and keep import boundaries intact.
 
-# 3. Verification Checklist
+# Verify
 
-1. **Format Code:** `pnpm format`
-2. **Lint & Boundary Verification:** `pnpm lint`
-3. **Build Check:** `pnpm build` (`vue-tsc -b && vite build`)
+Run `pnpm check:architecture`, `pnpm lint`, and `pnpm build`.

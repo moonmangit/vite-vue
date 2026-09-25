@@ -2,7 +2,7 @@ import { createApp } from 'vue'
 import VueApexCharts from 'vue3-apexcharts'
 import './style.css'
 import App from './app/App.vue'
-import { i18n, installDesignTokens, installPrimeVue, pinia, router } from './app/config'
+import { i18n, installDesignTokens, installPrimeVue, pinia, router } from './app/config/main'
 
 installDesignTokens()
 

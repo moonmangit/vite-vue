@@ -1,15 +1,11 @@
 <script setup lang="ts">
 import Button from 'primevue/button'
-import SidebarNavItemSection, { type NavItem } from './SidebarNavItemSection.vue'
-
-export interface SidebarGroup {
-  titleKey: string
-  items: NavItem[]
-}
+import type { NavigationGroup } from '../../../shared/navigation/main'
+import SidebarNavItemSection from './SidebarNavItemSection.vue'
 
 defineProps<{
   isSidebarCollapsed: boolean
-  sidebarGroups: SidebarGroup[]
+  sidebarGroups: NavigationGroup[]
 }>()
 
 const emit = defineEmits<{

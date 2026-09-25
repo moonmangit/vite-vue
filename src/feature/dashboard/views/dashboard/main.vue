@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { useToast } from 'primevue/usetoast'
 import { mockActivities, mockChartSeries, mockMetrics, mockNodes } from '../../lib/dashboardData'
-import AnalyticsChartSection from './AnalyticsChartSection.vue'
-import DashboardHeaderSection from './DashboardHeaderSection.vue'
-import MetricsGridSection from './MetricsGridSection.vue'
-import QuickActionsSection from './QuickActionsSection.vue'
-import RecentActivitySection from './RecentActivitySection.vue'
-import SystemStatusSection from './SystemStatusSection.vue'
+import AnalyticsChartSection from './section/AnalyticsChartSection.vue'
+import DashboardHeaderSection from './section/DashboardHeaderSection.vue'
+import MetricsGridSection from './section/MetricsGridSection.vue'
+import QuickActionsSection from './section/QuickActionsSection.vue'
+import RecentActivitySection from './section/RecentActivitySection.vue'
+import SystemStatusSection from './section/SystemStatusSection.vue'
 
 const toast = useToast()
 

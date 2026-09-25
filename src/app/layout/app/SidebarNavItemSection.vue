@@ -2,28 +2,11 @@
 import { computed, ref, watch } from 'vue'
 import Tag from 'primevue/tag'
 import { RouterLink, useRoute } from 'vue-router'
-
-export interface NavItemBadge {
-  value: string | number
-  severity?: 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast'
-  pulse?: boolean
-}
-
-export interface NavItem {
-  id: string
-  labelKey?: string
-  label?: string
-  icon?: string
-  to?: string
-  badge?: NavItemBadge
-  statusState?: 'normal' | 'muted' | 'loading' | 'notify'
-  children?: NavItem[]
-  expanded?: boolean
-}
+import type { NavigationItem } from '../../../shared/navigation/main'
 
 const props = withDefaults(
   defineProps<{
-    item: NavItem
+    item: NavigationItem
     isSidebarCollapsed: boolean
     depth?: number
   }>(),
@@ -50,7 +33,7 @@ const isActive = computed(() => {
 const hasActiveChild = computed((): boolean => {
   if (!props.item.children || props.item.children.length === 0) return false
 
-  function checkChild(childrenList: NavItem[]): boolean {
+  function checkChild(childrenList: NavigationItem[]): boolean {
     return childrenList.some((child) => {
       if (child.children && child.children.length > 0) {
         return checkChild(child.children)

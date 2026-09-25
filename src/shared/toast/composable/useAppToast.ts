@@ -1,5 +1,5 @@
 import { useToast } from 'primevue/usetoast'
-import { useToastStore, type ToastOptions, type ToastSeverity } from '../store/toast'
+import { useToastStore, type ToastOptions, type ToastSeverity } from '../store/main'
 
 export function useAppToast() {
   let primeToast: ReturnType<typeof useToast> | null = null

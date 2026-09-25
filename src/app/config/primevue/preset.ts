@@ -9,7 +9,7 @@ import {
   successPalette,
   surfacePalette,
   warningPalette,
-} from '../designTokens'
+} from '../designTokens/main'
 
 export const AppPreset = definePreset(Aura, {
   semantic: {

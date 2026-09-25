@@ -1,101 +1,74 @@
 # Implementation Guideline
 
-This project uses a feature-oriented Vue 3 + Vite structure. Application shell composition, reusable shared components/services, and domain feature modules are cleanly separated.
+This project uses a feature-oriented Vue 3 + Vite structure. Keep code in its owning layer and preserve the dependency direction: `shared` is consumable by both `app` and `feature`; features depend on shared and their own modules; app composes the feature modules.
 
----
-
-## Top-Level Source Layout
-
-```txt
-src/
-├── main.ts                   # Vite entry point
-├── style.css                 # Global CSS, Tailwind CSS v4, dark mode custom variant
-├── app/                      # Application shell, router config, layout composition
-│   ├── config/               # App configuration modules (designTokens, i18n, pinia, primevue, router)
-│   └── layout/               # Layout containers & co-located layout sections
-│       ├── app/              # AppLayout.vue, TopNavSection.vue, SidebarNavSection.vue
-│       └── empty/            # EmptyLayout.vue
-├── feature/                  # Domain-owned feature modules
-│   └── <featureName>/
-│       ├── component/        # Feature-owned reusable components (e.g. LoginForm.vue)
-│       ├── lib/              # Feature domain services, helpers, data builders
-│       ├── store/            # Feature Pinia state management
-│       └── view/             # Route pages with co-located sections
-│           └── <viewSlug>/   # e.g. view/dashboard/DashboardView.vue, DashboardHeaderSection.vue
-└── shared/                   # Cross-feature reusable utilities & UI
-    ├── assets/               # Shared static assets
-    ├── component/            # Shared UI components (StatCard.vue, StatusBadge.vue)
-    ├── composable/           # Shared Vue composables
-    └── lib/                  # Shared utilities & service wrappers
-        └── service/          # Predefined typed API wrappers (e.g. service/auth/post.loginWithUsername.ts)
-```
-
----
-
-## `src/app` Composition Layer
-
-`app` contains application setup, routes, modularized configurations, and top-level layout shells.
+## App configuration
 
 ```txt
 src/app/
-├── App.vue                   # Root Vue entry point rendering <RouterView />
-├── config/                   # Modularized configuration files
-│   ├── designTokens/         # Brand color palettes (primary, surface, etc.)
-│   ├── i18n/                 # Vue I18n setup & locales (en, th)
-│   ├── pinia/                # Pinia store instance
-│   ├── primevue/             # PrimeVue installation & preset.ts
-│   └── router/               # Vue Router instance & routes.ts
-└── layout/                   # Layout containers & co-located layout sections
-    ├── app/                  # AppLayout.vue, TopNavSection.vue, SidebarNavSection.vue
-    └── empty/                # EmptyLayout.vue
+├── App.vue
+├── config/
+│   ├── main.ts
+│   ├── i18n/main.ts
+│   ├── pinia/main.ts
+│   ├── primevue/main.ts
+│   └── router/main.ts
+└── layout/<layout-name>/
 ```
 
----
+Every config module has a required `main.ts`. Keep third-party setup and its support files inside the relevant config folder. `src/app/config/router/` composes routes exported from feature `route.config.ts` files and applies app layouts.
 
-## The Layout, View, Section Pattern
-
-| Classification | Pattern                     | Placement                                              | Description                                                                                |
-| :------------- | :-------------------------- | :----------------------------------------------------- | :----------------------------------------------------------------------------------------- |
-| **Layout**     | `*Layout.vue`               | `src/app/layout/<layoutSlug>/`                         | Shell layout containers (`AppLayout.vue`, `EmptyLayout.vue`).                              |
-| **View**       | `*View.vue`                 | `src/feature/*/view/<viewSlug>/`                       | Route page containers (`DashboardView.vue`, `LoginView.vue`).                              |
-| **Section**    | `*Section.vue`              | Co-located inside view or layout subfolder             | Single-use section component co-located in the same subfolder without a `section/` folder. |
-| **Component**  | `*Form.vue`<br/>`*Card.vue` | `src/shared/component/`<br/>`src/feature/*/component/` | Multi-use reusable UI components.                                                          |
-
----
-
-## `src/shared` Reusable Layer
-
-`shared` contains generic UI components, composables, and API wrapper services accessible by features.
-
-### Typed Endpoint Service Wrappers (`src/shared/lib/service/`)
-
-Endpoint wrappers encapsulate API calls and export typed `Request` and `Response` interfaces:
+## Shared layer
 
 ```txt
-src/shared/lib/service/
-├── http.ts                           # Centralized Axios client
-└── auth/
-    ├── post.loginWithUsername.ts      # Typed POST endpoint wrapper
-    ├── get.loginWithGoogleAuth.ts     # Typed GET endpoint wrapper
-    └── post.logout.ts                 # Typed POST logout wrapper
+src/shared/
+├── <system-name>/
+│   ├── main.ts              # required public use-case entry point
+│   ├── composable/          # optional system-only support
+│   ├── store/
+│   ├── service/
+│   └── ...
+├── component/               # globally reusable UI
+├── lib/service/             # generic typed endpoint wrappers
+└── ...                      # optional global shared categories
 ```
 
----
+Shared systems such as toast own their supporting stores, composables, services, translations, assets, and sections. Export supported use cases through the system `main.ts`. Shared code must not import from app or feature.
 
-## Import Boundaries & Enforcement
-
-ESLint (`eslint-plugin-boundaries`) enforces module boundary isolation:
+## Feature layer
 
 ```txt
-app     -> app, shared, feature
-feature -> same feature, shared
-shared  -> shared
+src/feature/<feature-name>/
+├── route.config.ts
+├── navigation.config.ts
+├── views/<view-name>/
+│   ├── main.vue
+│   ├── section/             # optional view-only sections
+│   ├── i18n/ lib/ asset/ composable/ store/ service/
+│   └── ...
+├── component/ i18n/ section/ lib/ asset/ composable/ store/ service/
+└── ...
 ```
 
-Run checks before pushing:
+Every feature owns its route and navigation declarations. The app router and layout import those declarations to compose the application. Features may use shared code and their own modules, but must not import app or other features. Keep view-only support inside the view; promote it to feature scope only when reused across views.
+
+## Placement rules
+
+| Kind                       | Placement                                               |
+| -------------------------- | ------------------------------------------------------- |
+| App layout                 | `src/app/layout/<layout-name>/`                         |
+| Feature page               | `src/feature/<feature>/views/<view>/main.vue`           |
+| View-only section          | `src/feature/<feature>/views/<view>/section/`           |
+| Feature reusable component | `src/feature/<feature>/component/`                      |
+| Global shared component    | `src/shared/component/`                                 |
+| Shared system              | `src/shared/<system>/main.ts` plus system-owned support |
+
+## Verification
+
+ESLint enforces app/feature/shared import boundaries. The architecture checker verifies required module entry points and feature configs:
 
 ```sh
+pnpm check:architecture
 pnpm lint
-pnpm format
 pnpm build
 ```

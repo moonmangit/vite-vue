@@ -4,7 +4,7 @@ import type { ApexOptions } from 'apexcharts'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import VueApexCharts from 'vue3-apexcharts'
-import { mockChartSeries, type ChartSeriesData } from '../../lib/dashboardData'
+import { mockChartSeries, type ChartSeriesData } from '../../../lib/dashboardData'
 
 const props = withDefaults(
   defineProps<{

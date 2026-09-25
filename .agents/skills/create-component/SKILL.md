@@ -1,30 +1,24 @@
 ---
 name: create-component
-description: 'Audit existing components, enforce project architecture layer boundaries, quantize design tokens, and create or extend Vue components and co-located view/layout sections.'
+description: 'Audit ownership and create Vue components in shared or feature scope while following app-feature-shared dependency boundaries.'
 ---
 
-# 1. Component Classification & Directory Placement
+# Choose the owner first
 
-| Type          | Pattern                     | Location Pattern                                       | Reusability    | Description                                                                                                                                             |
-| :------------ | :-------------------------- | :----------------------------------------------------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Layout**    | `*Layout.vue`               | `src/app/layout/<layoutSlug>/`                         | Shell wrapper  | Master layout containers (`AppLayout.vue`, `EmptyLayout.vue`).                                                                                          |
-| **View**      | `*View.vue`                 | `src/feature/*/view/<viewSlug>/`                       | Route page     | Route container pages (`DashboardView.vue`, `LoginView.vue`).                                                                                           |
-| **Section**   | `*Section.vue`              | Co-located with `*View.vue` or `*Layout.vue`           | **Single-use** | Dedicated section component co-located in the view/layout subfolder (`SidebarNavSection.vue`, `SidebarNavItemSection.vue`) without a `section/` folder. |
-| **Component** | `*Form.vue`<br/>`*Card.vue` | `src/shared/component/`<br/>`src/feature/*/component/` | **Multi-use**  | Reusable UI component shared across views/features (`LoginForm.vue`, `StatCard.vue`).                                                                   |
+| Component                  | Placement                                     | Use                                   |
+| -------------------------- | --------------------------------------------- | ------------------------------------- |
+| Shared reusable component  | `src/shared/component/`                       | Used by app and/or multiple features  |
+| Feature reusable component | `src/feature/<feature>/component/`            | Used by multiple views in one feature |
+| View-only section          | `src/feature/<feature>/views/<view>/section/` | Used only by one view                 |
+| Layout-only section        | `src/app/layout/<layout>/`                    | Used only by one app layout           |
+| Route page                 | `src/feature/<feature>/views/<view>/main.vue` | Feature route content                 |
 
----
+Before creating a component, inspect existing components and use the narrowest owner that accurately matches its consumers. Shared code must not import app or feature code. Features may import shared and their own feature only; app composition can import app, shared, and feature declarations.
 
-# 2. Audit & Deduplicate Before Creating
+# Feature integration
 
-1. **Check Reusability:**
-   - Multi-use shared components $\rightarrow$ `src/shared/component/` or `src/feature/<featureName>/component/`.
-   - Single-use sections $\rightarrow$ Co-locate `*Section.vue` directly in the view's or layout's subfolder (`src/app/layout/app/SidebarNavItemSection.vue`).
-2. **Prevent Duplication:** Check existing components to avoid rebuilding 80%+ similar components.
+Feature pages and their menu/route declarations belong to the owning feature. Put routes in `route.config.ts`, navigation in `navigation.config.ts`, and let the app compose those configs. Do not move feature-only display behavior into app layout components.
 
----
+# Verification
 
-# 3. Layer Boundary & Verification
-
-1. **Format Check:** `pnpm format`
-2. **Lint & Boundary Check:** `pnpm lint`
-3. **Build Verification:** `pnpm build` (`vue-tsc -b && vite build`)
+Run `pnpm check:architecture`, `pnpm lint`, and `pnpm build`.

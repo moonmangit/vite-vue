@@ -5,10 +5,13 @@ import { useToast } from 'primevue/usetoast'
 import { watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterView, useRouter } from 'vue-router'
-import { setAppLocale, type Locale } from '../../../app/config/i18n'
+import { setAppLocale, type Locale } from '../../../app/config/i18n/main'
 import { useAuthStore } from '../../../feature/auth/store/auth'
-import { useToastStore } from '../../../shared/store/toast'
-import SidebarNavSection, { type SidebarGroup } from './SidebarNavSection.vue'
+import { authNavigation } from '../../../feature/auth/navigation.config'
+import { dashboardNavigation } from '../../../feature/dashboard/navigation.config'
+import type { NavigationGroup } from '../../../shared/navigation/main'
+import { useToastStore } from '../../../shared/toast/main'
+import SidebarNavSection from './SidebarNavSection.vue'
 import TopNavSection from './TopNavSection.vue'
 
 const router = useRouter()
@@ -47,145 +50,26 @@ const languageOptions = [
   { label: 'ไทย', value: 'th' },
 ]
 
-const sidebarGroups: SidebarGroup[] = [
-  {
-    titleKey: 'nav.groups.core',
-    items: [
-      {
-        id: 'dashboard',
-        labelKey: 'nav.dashboard',
-        icon: 'pi pi-th-large',
-        to: '/',
-        statusState: 'notify',
-        badge: { value: 'LIVE', severity: 'success', pulse: true },
-      },
-      {
-        id: 'analytics-parent',
-        labelKey: 'nav.analytics',
-        icon: 'pi pi-chart-line',
-        children: [
-          {
-            id: 'realtime-metrics',
-            label: 'Realtime Telemetry',
-            icon: 'pi pi-bolt',
-            to: '/analytics/realtime',
-          },
-          {
-            id: 'data-warehousing-level2',
-            label: 'Data Warehousing',
-            icon: 'pi pi-database',
-            statusState: 'notify',
-            children: [
-              {
-                id: 'bq-realtime-level3',
-                label: 'BigQuery Stream',
-                icon: 'pi pi-cloud',
-                to: '/analytics/bigquery',
-                badge: { value: '99.9%', severity: 'success' },
-              },
-              {
-                id: 'snowflake-level3',
-                label: 'Snowflake Storage',
-                icon: 'pi pi-box',
-                to: '/snowflake',
-                statusState: 'muted',
-              },
-              {
-                id: 'clickhouse-level3',
-                label: 'ClickHouse Sync',
-                icon: 'pi pi-sync',
-                to: '/clickhouse',
-                statusState: 'loading',
-              },
-            ],
-          },
-          {
-            id: 'historical-reports',
-            label: 'Historical Reports',
-            icon: 'pi pi-file',
-            to: '/reports',
-            statusState: 'muted',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    titleKey: 'nav.groups.system',
-    items: [
-      {
-        id: 'cluster-nodes-level1',
-        labelKey: 'nav.clusterNodes',
-        icon: 'pi pi-server',
-        children: [
-          {
-            id: 'k8s-regional-level2',
-            label: 'Kubernetes Pods',
-            icon: 'pi pi-box',
-            children: [
-              {
-                id: 'node-us-east-level3',
-                label: 'US-East (Prod Cluster)',
-                icon: 'pi pi-globe',
-                to: '/nodes/us-east',
-              },
-              {
-                id: 'node-eu-west-level3',
-                label: 'EU-West (Staging Cluster)',
-                icon: 'pi pi-globe',
-                to: '/nodes/eu-west',
-                badge: { value: 'WARN', severity: 'warn' },
-              },
-              {
-                id: 'node-ap-south-level3',
-                label: 'AP-South (Dev Cluster)',
-                icon: 'pi pi-globe',
-                to: '/nodes/ap-south',
-              },
-            ],
-          },
-        ],
-      },
-      {
-        id: 'security-audit',
-        labelKey: 'nav.securityAudit',
-        icon: 'pi pi-shield',
-        statusState: 'notify',
-        badge: { value: '3 Alerts', severity: 'danger', pulse: true },
-      },
-    ],
-  },
-  {
-    titleKey: 'nav.groups.app',
-    items: [
-      {
-        id: 'login-view',
-        labelKey: 'nav.loginView',
-        icon: 'pi pi-lock',
-        to: '/login',
-      },
-      {
-        id: 'system-settings',
-        labelKey: 'nav.systemSettings',
-        icon: 'pi pi-cog',
-        children: [
-          {
-            id: 'general-settings',
-            label: 'General Preferences',
-            icon: 'pi pi-sliders-h',
-            to: '/settings/general',
-          },
-          {
-            id: 'i18n-settings',
-            label: 'Language & Locale',
-            icon: 'pi pi-language',
-            to: '/settings/i18n',
-          },
-        ],
-      },
-    ],
-  },
-]
+const sidebarGroups = mergeNavigationGroups([
+  ...dashboardNavigation.slice(0, 2),
+  ...authNavigation,
+  ...dashboardNavigation.slice(2),
+])
+
+function mergeNavigationGroups(groups: NavigationGroup[]): NavigationGroup[] {
+  const mergedGroups: NavigationGroup[] = []
+
+  for (const group of groups) {
+    const existingGroup = mergedGroups.find((item) => item.titleKey === group.titleKey)
+    if (existingGroup) {
+      existingGroup.items.push(...group.items)
+    } else {
+      mergedGroups.push({ ...group, items: [...group.items] })
+    }
+  }
+
+  return mergedGroups
+}
 
 const isDark = useDark({
   selector: 'html',
