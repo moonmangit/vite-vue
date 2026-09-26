@@ -5,7 +5,7 @@ import { AppToastOutlet } from '../../../shared/toast/main'
 
 <template>
   <AppToastOutlet />
-  <div class="min-h-screen bg-slate-50 app-text-normal transition-colors app-dark:bg-zinc-950">
+  <div class="min-h-screen bg-surface-50 app-text-normal transition-colors app-dark:bg-surface-950">
     <RouterView />
   </div>
 </template>

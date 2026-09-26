@@ -25,7 +25,7 @@ defineProps<{
         <div
           v-for="node in nodeCluster"
           :key="node.name"
-          class="rounded-lg border border-slate-100 p-2.5 app-dark:border-zinc-800/80 bg-slate-50/50 app-dark:bg-zinc-900/30"
+          class="rounded-lg border border-surface-100 p-2.5 app-dark:border-surface-800/80 bg-surface-50/50 app-dark:bg-surface-900/30"
         >
           <div class="flex items-center justify-between mb-1.5">
             <span class="app-text-xs app-text-normal font-bold">

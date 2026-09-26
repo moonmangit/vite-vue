@@ -14,29 +14,29 @@
   --color-primary-800: var(--brand-primary-800);
   --color-primary-900: var(--brand-primary-900);
   --color-primary-950: var(--brand-primary-950);
-  --color-surface-0: var(--brand-surface-0);
-  --color-surface-50: var(--brand-surface-50);
-  --color-surface-100: var(--brand-surface-100);
-  --color-surface-200: var(--brand-surface-200);
-  --color-surface-300: var(--brand-surface-300);
-  --color-surface-400: var(--brand-surface-400);
-  --color-surface-500: var(--brand-surface-500);
-  --color-surface-600: var(--brand-surface-600);
-  --color-surface-700: var(--brand-surface-700);
-  --color-surface-800: var(--brand-surface-800);
-  --color-surface-900: var(--brand-surface-900);
-  --color-surface-950: var(--brand-surface-950);
-  --color-secondary-50: var(--brand-secondary-50);
-  --color-secondary-100: var(--brand-secondary-100);
-  --color-secondary-200: var(--brand-secondary-200);
-  --color-secondary-300: var(--brand-secondary-300);
-  --color-secondary-400: var(--brand-secondary-400);
-  --color-secondary-500: var(--brand-secondary-500);
-  --color-secondary-600: var(--brand-secondary-600);
-  --color-secondary-700: var(--brand-secondary-700);
-  --color-secondary-800: var(--brand-secondary-800);
-  --color-secondary-900: var(--brand-secondary-900);
-  --color-secondary-950: var(--brand-secondary-950);
+  --color-surface-0: var(--p-surface-0);
+  --color-surface-50: var(--p-surface-50);
+  --color-surface-100: var(--p-surface-100);
+  --color-surface-200: var(--p-surface-200);
+  --color-surface-300: var(--p-surface-300);
+  --color-surface-400: var(--p-surface-400);
+  --color-surface-500: var(--p-surface-500);
+  --color-surface-600: var(--p-surface-600);
+  --color-surface-700: var(--p-surface-700);
+  --color-surface-800: var(--p-surface-800);
+  --color-surface-900: var(--p-surface-900);
+  --color-surface-950: var(--p-surface-950);
+  --color-secondary-50: var(--p-surface-50);
+  --color-secondary-100: var(--p-surface-100);
+  --color-secondary-200: var(--p-surface-200);
+  --color-secondary-300: var(--p-surface-300);
+  --color-secondary-400: var(--p-surface-400);
+  --color-secondary-500: var(--p-surface-500);
+  --color-secondary-600: var(--p-surface-600);
+  --color-secondary-700: var(--p-surface-700);
+  --color-secondary-800: var(--p-surface-800);
+  --color-secondary-900: var(--p-surface-900);
+  --color-secondary-950: var(--p-surface-950);
   --color-success-50: var(--brand-success-50);
   --color-success-100: var(--brand-success-100);
   --color-success-200: var(--brand-success-200);
@@ -95,6 +95,11 @@
 }
 
 :root {
+  --app-surface-color: var(--p-surface-0);
+  --app-surface-border-color: var(--p-surface-200);
+  --app-chart-axis-color: var(--p-surface-500);
+  --app-chart-grid-color: var(--p-surface-100);
+  --app-chart-marker-color: var(--p-surface-0);
   --app-type-xs: 0.75rem;
   --app-type-sm: 0.875rem;
   --app-type-md: 1rem;
@@ -102,15 +107,20 @@
   --app-type-xl: 1.25rem;
   --app-type-2xl: 1.5rem;
   --app-type-3xl: 1.875rem;
-  --app-tone-normal: var(--brand-surface-900);
-  --app-tone-muted: var(--brand-surface-500);
-  --app-tone-disabled: var(--brand-surface-400);
+  --app-tone-normal: var(--p-surface-900);
+  --app-tone-muted: var(--p-surface-500);
+  --app-tone-disabled: var(--p-surface-400);
 }
 
 .app-dark {
-  --app-tone-normal: var(--brand-surface-50);
-  --app-tone-muted: var(--brand-surface-400);
-  --app-tone-disabled: var(--brand-surface-500);
+  --app-surface-color: var(--p-surface-900);
+  --app-surface-border-color: var(--p-surface-700);
+  --app-chart-axis-color: var(--p-surface-400);
+  --app-chart-grid-color: var(--p-surface-800);
+  --app-chart-marker-color: var(--p-surface-900);
+  --app-tone-normal: var(--p-surface-0);
+  --app-tone-muted: var(--p-surface-400);
+  --app-tone-disabled: var(--p-surface-500);
 }
 
 .app-text-xs {
@@ -172,128 +182,58 @@
   color: var(--app-tone-normal);
 }
 
-:root {
-  --app-type-xs: 0.75rem;
-  --app-type-sm: 0.875rem;
-  --app-type-md: 1rem;
-  --app-type-lg: 1.125rem;
-  --app-type-xl: 1.25rem;
-  --app-type-2xl: 1.5rem;
-  --app-type-3xl: 1.875rem;
-  --app-tone-normal: var(--brand-surface-900);
-  --app-tone-muted: var(--brand-surface-500);
-  --app-tone-disabled: var(--brand-surface-400);
+.app-surface {
+  background-color: var(--app-surface-color);
 }
 
-.app-dark {
-  --app-tone-normal: var(--brand-surface-50);
-  --app-tone-muted: var(--brand-surface-400);
-  --app-tone-disabled: var(--brand-surface-600);
+.app-card.p-card {
+  border: 1px solid var(--app-surface-border-color);
 }
 
-.app-text-xs {
-  font-size: var(--app-font-size, var(--app-type-xs));
+.app-surface-border {
+  border-color: var(--app-surface-border-color);
 }
 
-.app-text-sm {
-  font-size: var(--app-font-size, var(--app-type-sm));
+.app-card--compact .p-card-body {
+  padding: 1rem;
 }
 
-.app-text-md {
-  font-size: var(--app-font-size, var(--app-type-md));
+.app-card--compact .p-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-.app-text-lg {
-  font-size: var(--app-font-size, var(--app-type-lg));
+.app-card--media {
+  overflow: hidden;
 }
 
-.app-text-xl {
-  font-size: var(--app-font-size, var(--app-type-xl));
+.app-card--media .p-card-body {
+  padding: 0;
 }
 
-.app-text-2xl {
-  font-size: var(--app-font-size, var(--app-type-2xl));
+.app-chart .apexcharts-xaxis text,
+.app-chart .apexcharts-yaxis text {
+  fill: var(--app-chart-axis-color) !important;
 }
 
-.app-text-3xl {
-  font-size: var(--app-font-size, var(--app-type-3xl));
+.app-chart .apexcharts-gridline {
+  stroke: var(--app-chart-grid-color) !important;
 }
 
-.app-text-normal {
-  color: var(--app-tone-normal);
+.app-chart .apexcharts-xaxis line,
+.app-chart .apexcharts-yaxis line {
+  stroke: var(--app-surface-border-color) !important;
 }
 
-.app-text-muted {
-  color: var(--app-tone-muted);
-}
-
-.app-text-disabled {
-  color: var(--app-tone-disabled);
-}
-
-:root {
-  --app-type-xs: 0.75rem;
-  --app-type-sm: 0.875rem;
-  --app-type-md: 1rem;
-  --app-type-lg: 1.125rem;
-  --app-type-xl: 1.25rem;
-  --app-type-2xl: 1.5rem;
-  --app-type-3xl: 1.875rem;
-  --app-tone-normal: var(--brand-surface-900);
-  --app-tone-muted: var(--brand-surface-500);
-  --app-tone-disabled: var(--brand-surface-400);
-}
-
-.app-dark {
-  --app-tone-normal: var(--brand-surface-50);
-  --app-tone-muted: var(--brand-surface-400);
-  --app-tone-disabled: var(--brand-surface-600);
-}
-
-.app-text-xs {
-  font-size: var(--app-font-size, var(--app-type-xs));
-}
-
-.app-text-sm {
-  font-size: var(--app-font-size, var(--app-type-sm));
-}
-
-.app-text-md {
-  font-size: var(--app-font-size, var(--app-type-md));
-}
-
-.app-text-lg {
-  font-size: var(--app-font-size, var(--app-type-lg));
-}
-
-.app-text-xl {
-  font-size: var(--app-font-size, var(--app-type-xl));
-}
-
-.app-text-2xl {
-  font-size: var(--app-font-size, var(--app-type-2xl));
-}
-
-.app-text-3xl {
-  font-size: var(--app-font-size, var(--app-type-3xl));
-}
-
-.app-text-normal {
-  color: var(--app-tone-normal);
-}
-
-.app-text-muted {
-  color: var(--app-tone-muted);
-}
-
-.app-text-disabled {
-  color: var(--app-tone-disabled);
+.app-chart .apexcharts-marker {
+  stroke: var(--app-chart-marker-color) !important;
 }
 
 :root {
   font-family: 'Noto Sans Thai';
   color-scheme: light;
-  background: #f8fafc;
+  background: var(--app-surface-color);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -313,7 +253,7 @@
 
 .app-dark {
   color-scheme: dark;
-  background: #09090b;
+  background: var(--app-surface-color);
 }
 
 body {

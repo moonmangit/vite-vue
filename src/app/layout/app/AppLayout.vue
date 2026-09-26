@@ -75,7 +75,7 @@ watch(
   <AppToastOutlet />
 
   <div
-    class="h-screen w-screen overflow-hidden flex flex-col bg-slate-50 app-text-normal transition-colors app-dark:bg-zinc-950"
+    class="h-screen w-screen overflow-hidden flex flex-col app-surface app-text-normal transition-colors"
   >
     <!-- Layout Section: Top Navigation Bar -->
     <TopNavSection
@@ -99,9 +99,7 @@ watch(
       />
 
       <!-- Main RouterView Area -->
-      <main
-        class="flex-1 h-full min-w-0 overflow-y-auto p-4 sm:p-6 bg-slate-50/50 app-dark:bg-zinc-950/50"
-      >
+      <main class="flex-1 h-full min-w-0 overflow-y-auto p-4 sm:p-6 app-surface">
         <RouterView />
       </main>
     </div>

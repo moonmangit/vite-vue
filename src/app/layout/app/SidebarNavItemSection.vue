@@ -94,16 +94,16 @@ function toggleExpand(e: Event) {
 
         // Loading state
         item.statusState === 'loading'
-          ? 'animate-pulse app-text-muted bg-slate-100/60 app-dark:bg-zinc-900/60'
+          ? 'animate-pulse app-text-muted bg-surface-100/60 app-dark:bg-surface-900/60'
           : '',
 
         // Active State (Current Page Only) vs Parent Containing Active Child
         isActive
           ? 'bg-primary-50 text-primary-700 font-bold shadow-2xs app-dark:bg-primary-600 app-dark:text-white app-dark:shadow-xs'
           : hasActiveChild
-            ? 'app-text-normal font-bold bg-slate-100/70 app-dark:bg-zinc-900/70'
+            ? 'app-text-normal font-bold bg-surface-100/70 app-dark:bg-surface-900/70'
             : item.statusState !== 'muted' && item.statusState !== 'loading'
-              ? 'app-text-muted hover:bg-slate-100 app-hover-text-normal app-dark:hover:bg-zinc-900'
+              ? 'app-text-muted hover:bg-surface-100 app-hover-text-normal app-dark:hover:bg-surface-900'
               : '',
       ]"
       @click="toggleExpand"
@@ -186,11 +186,11 @@ function toggleExpand(e: Event) {
       class="absolute left-full top-0 pl-2.5 z-50 transition-all duration-200 opacity-0 pointer-events-none -translate-x-1 group-hover/flyout:opacity-100 group-hover/flyout:pointer-events-auto group-hover/flyout:translate-x-0"
     >
       <div
-        class="relative min-w-56 max-w-72 rounded-xl border border-slate-200/90 bg-white/95 p-3 shadow-xl backdrop-blur-md app-dark:border-zinc-800 app-dark:bg-zinc-900/95 before:absolute before:-left-4 before:top-0 before:bottom-0 before:w-4 before:content-['']"
+        class="relative min-w-56 max-w-72 rounded-xl border border-surface-200/90 bg-surface-0/95 p-3 shadow-xl backdrop-blur-md app-dark:border-surface-800 app-dark:bg-surface-900/95 before:absolute before:-left-4 before:top-0 before:bottom-0 before:w-4 before:content-['']"
       >
         <!-- Flyout Header Title -->
         <div
-          class="flex items-center justify-between gap-2 pb-2 border-b border-slate-100 app-dark:border-zinc-800/80"
+          class="flex items-center justify-between gap-2 pb-2 border-b border-surface-100 app-dark:border-surface-800/80"
         >
           <div class="flex items-center gap-2 min-w-0">
             <i
@@ -248,7 +248,7 @@ function toggleExpand(e: Event) {
           :class="
             hasActiveChild
               ? 'border-primary-300/70 app-dark:border-primary-500/40'
-              : 'border-slate-200/60 app-dark:border-zinc-800/60'
+              : 'border-surface-200/60 app-dark:border-surface-800/60'
           "
         >
           <SidebarNavItemSection

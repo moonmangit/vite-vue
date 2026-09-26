@@ -3,9 +3,7 @@ import { RouterLink } from 'vue-router'
 import type { User } from '../../../feature/auth/store/auth'
 import AppAvatar from '../../../shared/component/AppAvatar.vue'
 import AppButton from '../../../shared/component/AppButton.vue'
-import AppInputText from '../../../shared/component/AppInputText.vue'
 import AppSelect from '../../../shared/component/AppSelect.vue'
-import AppTag from '../../../shared/component/AppTag.vue'
 import AppToggleSwitch from '../../../shared/component/AppToggleSwitch.vue'
 
 defineProps<{
@@ -24,9 +22,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <header
-    class="h-14 shrink-0 border-b border-slate-200 bg-white/90 backdrop-blur-md app-dark:border-zinc-800 app-dark:bg-zinc-950/90 z-40"
-  >
+  <header class="h-14 shrink-0 border-b app-surface-border app-surface z-40">
     <div class="flex h-full items-center justify-between px-4">
       <!-- Left Header Section: Sidebar Toggle & Brand -->
       <div class="flex items-center gap-3">
@@ -52,31 +48,6 @@ const emit = defineEmits<{
             Apex<span class="text-primary-600">Admin</span>
           </span>
         </RouterLink>
-
-        <AppTag
-          :value="$t('app.operational')"
-          tone="success"
-          class="hidden md:inline-flex app-text-custom px-1.5 py-0.5"
-          style="--app-font-size: 10px"
-        />
-      </div>
-
-      <!-- Center Search Bar -->
-      <div class="hidden lg:flex items-center w-72 relative">
-        <AppInputText
-          :placeholder="$t('app.searchPlaceholder')"
-          class="w-full app-text-xs pl-8 pr-12"
-          fluid
-        />
-        <i
-          class="pi pi-search absolute left-2.5 top-1/2 -translate-y-1/2 app-text-xs app-text-muted"
-        />
-        <span
-          class="absolute right-2 top-1/2 -translate-y-1/2 rounded border border-slate-200 bg-slate-100 px-1 py-0.5 app-text-custom app-text-muted font-mono app-dark:border-zinc-800 app-dark:bg-zinc-900"
-          style="--app-font-size: 9px"
-        >
-          ⌘K
-        </span>
       </div>
 
       <!-- Right Controls: Language, Theme, Profile -->
@@ -103,7 +74,7 @@ const emit = defineEmits<{
         />
 
         <div
-          class="flex items-center gap-1.5 rounded-lg border border-slate-200 px-2 py-1 app-dark:border-zinc-800"
+          class="flex items-center gap-1.5 rounded-lg border border-surface-200 px-2 py-1 app-dark:border-surface-800"
         >
           <i class="pi pi-moon app-text-xs app-text-muted" aria-hidden="true" />
           <AppToggleSwitch
@@ -125,14 +96,14 @@ const emit = defineEmits<{
             :aria-label="$t('nav.notifications')"
           />
           <span
-            class="absolute top-1 right-1 size-2 rounded-full bg-rose-500 ring-2 ring-white app-dark:ring-zinc-950"
+            class="absolute top-1 right-1 size-2 rounded-full bg-rose-500 ring-2 ring-surface-0 app-dark:ring-surface-950"
           />
         </div>
 
         <!-- User Profile & Sign Out -->
         <div
           v-if="user"
-          class="flex items-center gap-2 pl-2 border-l border-slate-200 app-dark:border-zinc-800"
+          class="flex items-center gap-2 pl-2 border-l border-surface-200 app-dark:border-surface-800"
         >
           <AppAvatar :image="user.avatar" shape="circle" class="size-7" />
           <div class="hidden xl:block text-left">

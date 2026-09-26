@@ -5,7 +5,6 @@ import {
   helpPalette,
   infoPalette,
   primaryPalette,
-  secondaryPalette,
   successPalette,
   surfacePalette,
   warningPalette,
@@ -15,7 +14,7 @@ export const AppPreset = definePreset(Aura, {
   semantic: {
     primary: primaryPalette,
     surface: surfacePalette,
-    secondary: secondaryPalette,
+    secondary: surfacePalette,
     success: successPalette,
     info: infoPalette,
     warn: warningPalette,
@@ -23,6 +22,16 @@ export const AppPreset = definePreset(Aura, {
     help: helpPalette,
   },
   components: {
+    card: {
+      colorScheme: {
+        light: {
+          root: { shadow: 'none' },
+        },
+        dark: {
+          root: { shadow: 'none' },
+        },
+      },
+    },
     button: {
       colorScheme: {
         dark: {

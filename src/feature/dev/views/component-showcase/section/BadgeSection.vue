@@ -3,6 +3,7 @@ import { useI18n } from 'vue-i18n'
 import StatusBadge from '../../../../../shared/component/StatusBadge.vue'
 import AppBadge from '../../../../../shared/component/AppBadge.vue'
 import AppTag from '../../../../../shared/component/AppTag.vue'
+import AppCard from '../../../../../shared/component/AppCard.vue'
 
 const { t } = useI18n({ useScope: 'global' })
 </script>
@@ -18,9 +19,7 @@ const { t } = useI18n({ useScope: 'global' })
       </p>
     </header>
 
-    <section
-      class="space-y-3 rounded-xl border border-slate-200 bg-white p-4 app-dark:border-zinc-800 app-dark:bg-zinc-900"
-    >
+    <AppCard variant="compact">
       <h3 class="app-text-sm app-text-normal font-semibold">
         {{ t('features.dev.badge.severities') }}
       </h3>
@@ -32,11 +31,9 @@ const { t } = useI18n({ useScope: 'global' })
         <AppTag :value="t('features.dev.badge.secondary')" tone="secondary" />
         <AppTag :value="t('features.dev.badge.contrast')" tone="contrast" />
       </div>
-    </section>
+    </AppCard>
 
-    <section
-      class="space-y-3 rounded-xl border border-slate-200 bg-white p-4 app-dark:border-zinc-800 app-dark:bg-zinc-900"
-    >
+    <AppCard variant="compact">
       <h3 class="app-text-sm app-text-normal font-semibold">
         {{ t('features.dev.badge.numeric') }}
       </h3>
@@ -54,11 +51,9 @@ const { t } = useI18n({ useScope: 'global' })
           <AppBadge value="2" tone="warning" />
         </span>
       </div>
-    </section>
+    </AppCard>
 
-    <section
-      class="space-y-3 rounded-xl border border-slate-200 bg-white p-4 app-dark:border-zinc-800 app-dark:bg-zinc-900"
-    >
+    <AppCard variant="compact">
       <h3 class="app-text-sm app-text-normal font-semibold">
         {{ t('features.dev.badge.shared') }}
       </h3>
@@ -67,6 +62,6 @@ const { t } = useI18n({ useScope: 'global' })
         <StatusBadge status="pending" />
         <StatusBadge status="inactive" />
       </div>
-    </section>
+    </AppCard>
   </div>
 </template>

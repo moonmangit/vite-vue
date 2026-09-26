@@ -15,7 +15,7 @@ const emit = defineEmits<{
 
 <template>
   <aside
-    class="relative z-30 flex h-full shrink-0 flex-col border-r border-slate-200 bg-white transition-all duration-300 app-dark:border-zinc-800/80 app-dark:bg-zinc-950 shadow-xs"
+    class="relative z-30 flex h-full shrink-0 flex-col border-r app-surface-border app-surface transition-all duration-300 shadow-xs"
     :class="isSidebarCollapsed ? 'w-16 overflow-visible' : 'w-64 overflow-hidden'"
   >
     <!-- Navigation Links Group List (Internal Scroll) -->
@@ -35,7 +35,7 @@ const emit = defineEmits<{
         <!-- Group Divider Line (Minimized Mode - except for first group index 0) -->
         <div
           v-else-if="index > 0"
-          class="my-2.5 border-t border-slate-200/80 app-dark:border-zinc-800/80 mx-1.5 transition-colors"
+          class="my-2.5 border-t app-surface-border mx-1.5 transition-colors"
           :title="$t(group.titleKey)"
         />
 
@@ -52,7 +52,7 @@ const emit = defineEmits<{
 
     <!-- Sidebar Footer -->
     <div
-      class="h-12 shrink-0 border-t border-slate-200/90 p-3 app-dark:border-zinc-800/80 flex items-center justify-between app-text-sm app-text-muted"
+      class="h-12 shrink-0 border-t app-surface-border p-3 flex items-center justify-between app-text-sm app-text-muted"
     >
       <span v-if="!isSidebarCollapsed" class="font-mono app-text-sm font-medium">
         v2.4.0 • Enterprise

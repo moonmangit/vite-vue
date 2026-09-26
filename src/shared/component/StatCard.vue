@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AppTag from './AppTag.vue'
+import AppCard from './AppCard.vue'
 
 defineProps<{
   title: string
@@ -13,16 +14,14 @@ defineProps<{
 </script>
 
 <template>
-  <div
-    class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md app-dark:border-zinc-800 app-dark:bg-zinc-900/80"
-  >
-    <div class="flex items-center justify-between gap-2 mb-2">
+  <AppCard variant="compact">
+    <div class="flex items-center justify-between gap-2">
       <span class="app-text-xs app-text-muted font-semibold uppercase tracking-wider">
         {{ title }}
       </span>
       <div
         v-if="icon"
-        class="grid size-8 place-items-center rounded-lg bg-slate-100 app-text-muted app-dark:bg-zinc-800"
+        class="grid size-8 place-items-center rounded-lg bg-surface-100 app-text-muted app-dark:bg-surface-800"
       >
         <i :class="['app-text-xs', icon]" aria-hidden="true" />
       </div>
@@ -65,8 +64,8 @@ defineProps<{
       </span>
     </div>
 
-    <p v-if="subtitle" class="mt-1 app-text-custom app-text-muted" style="--app-font-size: 11px">
+    <p v-if="subtitle" class="m-0 app-text-custom app-text-muted" style="--app-font-size: 11px">
       {{ subtitle }}
     </p>
-  </div>
+  </AppCard>
 </template>

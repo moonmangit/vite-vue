@@ -41,7 +41,7 @@ defineProps<{
       <div class="overflow-x-auto">
         <table class="w-full text-left app-text-xs border-collapse">
           <thead>
-            <tr class="border-b border-slate-200 app-text-muted app-dark:border-zinc-800">
+            <tr class="border-b border-surface-200 app-text-muted app-dark:border-surface-800">
               <th class="py-2 px-3 font-semibold">{{ $t('features.dashboard.audit.user') }}</th>
               <th class="py-2 px-3 font-semibold">{{ $t('features.dashboard.audit.action') }}</th>
               <th class="py-2 px-3 font-semibold">
@@ -53,11 +53,11 @@ defineProps<{
               </th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-slate-100 app-dark:divide-zinc-800/60">
+          <tbody class="divide-y divide-surface-100 app-dark:divide-surface-800/60">
             <tr
               v-for="log in auditLogs"
               :key="log.id"
-              class="hover:bg-slate-50 app-dark:hover:bg-zinc-900/50 transition"
+              class="hover:bg-surface-50 app-dark:hover:bg-surface-900/50 transition"
             >
               <td class="py-2.5 px-3 font-bold app-text-normal">
                 {{ log.user }}

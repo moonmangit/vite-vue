@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppButton from '../../../../../shared/component/AppButton.vue'
+import AppCard from '../../../../../shared/component/AppCard.vue'
 import AppCheckbox from '../../../../../shared/component/AppCheckbox.vue'
 import AppFileUpload from '../../../../../shared/component/AppFileUpload.vue'
 import AppInputNumber from '../../../../../shared/component/AppInputNumber.vue'
@@ -86,9 +87,7 @@ onBeforeUnmount(() => {
       </p>
     </header>
 
-    <section
-      class="space-y-3 rounded-xl border border-slate-200 bg-white p-4 app-dark:border-zinc-800 app-dark:bg-zinc-900"
-    >
+    <AppCard variant="compact">
       <h3 class="app-text-sm app-text-normal font-semibold">{{ t('features.dev.input.text') }}</h3>
       <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         <div class="space-y-2">
@@ -116,7 +115,7 @@ onBeforeUnmount(() => {
               v-model="form.search"
               type="search"
               :placeholder="t('features.dev.input.searchPlaceholder')"
-              class="pl-9"
+              class="!pl-9"
               fluid
             />
             <i
@@ -186,11 +185,9 @@ onBeforeUnmount(() => {
           />
         </div>
       </div>
-    </section>
+    </AppCard>
 
-    <section
-      class="space-y-3 rounded-xl border border-slate-200 bg-white p-4 app-dark:border-zinc-800 app-dark:bg-zinc-900"
-    >
+    <AppCard variant="compact">
       <div>
         <h3 class="app-text-sm app-text-normal font-semibold">
           {{ t('features.dev.input.number') }}
@@ -231,11 +228,9 @@ onBeforeUnmount(() => {
           </small>
         </div>
       </div>
-    </section>
+    </AppCard>
 
-    <section
-      class="space-y-3 rounded-xl border border-slate-200 bg-white p-4 app-dark:border-zinc-800 app-dark:bg-zinc-900"
-    >
+    <AppCard variant="compact">
       <h3 class="app-text-sm app-text-normal font-semibold">
         {{ t('features.dev.input.select') }}
       </h3>
@@ -270,12 +265,10 @@ onBeforeUnmount(() => {
           />
         </div>
       </div>
-    </section>
+    </AppCard>
 
     <section class="grid gap-4 md:grid-cols-2">
-      <div
-        class="space-y-3 rounded-xl border border-slate-200 bg-white p-4 app-dark:border-zinc-800 app-dark:bg-zinc-900"
-      >
+      <AppCard variant="compact">
         <div>
           <h3 class="app-text-sm app-text-normal font-semibold">
             {{ t('features.dev.input.checkbox') }}
@@ -316,11 +309,9 @@ onBeforeUnmount(() => {
             </div>
           </div>
         </div>
-      </div>
+      </AppCard>
 
-      <div
-        class="space-y-3 rounded-xl border border-slate-200 bg-white p-4 app-dark:border-zinc-800 app-dark:bg-zinc-900"
-      >
+      <AppCard variant="compact">
         <div>
           <h3 class="app-text-sm app-text-normal font-semibold">
             {{ t('features.dev.input.switch') }}
@@ -335,12 +326,10 @@ onBeforeUnmount(() => {
             {{ t('features.dev.input.maintenanceMode') }}
           </label>
         </div>
-      </div>
+      </AppCard>
     </section>
 
-    <section
-      class="space-y-3 rounded-xl border border-slate-200 bg-white p-4 app-dark:border-zinc-800 app-dark:bg-zinc-900"
-    >
+    <AppCard variant="compact">
       <h3 class="app-text-sm app-text-normal font-semibold">{{ t('features.dev.input.radio') }}</h3>
       <span class="app-text-sm app-text-normal font-medium">{{
         t('features.dev.input.plan')
@@ -358,11 +347,9 @@ onBeforeUnmount(() => {
           }}</label>
         </div>
       </div>
-    </section>
+    </AppCard>
 
-    <section
-      class="space-y-3 rounded-xl border border-slate-200 bg-white p-4 app-dark:border-zinc-800 app-dark:bg-zinc-900"
-    >
+    <AppCard variant="compact">
       <div>
         <h3 class="app-text-sm app-text-normal font-semibold">
           {{ t('features.dev.input.file') }}
@@ -403,36 +390,37 @@ onBeforeUnmount(() => {
         </template>
         <template #content="{ files, removeFileCallback }">
           <div v-if="files.length" class="grid gap-3 pt-4 sm:grid-cols-2 xl:grid-cols-3">
-            <div
+            <AppCard
               v-for="(file, index) in files"
               :key="`${file.name}-${file.size}`"
-              class="flex min-w-0 items-center justify-between gap-3 rounded-lg border border-slate-200 p-3 app-dark:border-zinc-700"
+              variant="compact"
+              class="min-w-0"
             >
-              <div class="min-w-0">
-                <p class="truncate app-text-sm app-text-normal font-medium">{{ file.name }}</p>
-                <p class="app-text-xs app-text-muted">{{ (file.size / 1024).toFixed(1) }} KB</p>
+              <div class="flex min-w-0 items-center justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="truncate app-text-sm app-text-normal font-medium">{{ file.name }}</p>
+                  <p class="app-text-xs app-text-muted">{{ (file.size / 1024).toFixed(1) }} KB</p>
+                </div>
+                <AppButton
+                  type="button"
+                  icon="pi pi-times"
+                  tone="secondary"
+                  appearance="text"
+                  rounded
+                  :aria-label="t('features.dev.input.removeFile')"
+                  @click="removeFileCallback(index)"
+                />
               </div>
-              <AppButton
-                type="button"
-                icon="pi pi-times"
-                tone="secondary"
-                appearance="text"
-                rounded
-                :aria-label="t('features.dev.input.removeFile')"
-                @click="removeFileCallback(index)"
-              />
-            </div>
+            </AppCard>
           </div>
           <p v-else class="py-5 text-center app-text-sm app-text-muted">
             {{ t('features.dev.input.dropFiles') }}
           </p>
         </template>
       </AppFileUpload>
-    </section>
+    </AppCard>
 
-    <section
-      class="space-y-3 rounded-xl border border-slate-200 bg-white p-4 app-dark:border-zinc-800 app-dark:bg-zinc-900"
-    >
+    <AppCard variant="compact">
       <div>
         <h3 class="app-text-sm app-text-normal font-semibold">
           {{ t('features.dev.input.image') }}
@@ -472,46 +460,48 @@ onBeforeUnmount(() => {
         </template>
         <template #content="{ files, removeFileCallback }">
           <div v-if="files.length" class="grid gap-3 pt-4 sm:grid-cols-2 xl:grid-cols-4">
-            <figure
+            <AppCard
               v-for="(file, index) in files"
               :key="`${file.name}-${file.size}`"
-              class="overflow-hidden rounded-lg border border-slate-200 app-dark:border-zinc-700"
+              variant="media"
             >
-              <img
-                :src="imagePreviews.get(file)"
-                :alt="`${t('features.dev.input.preview')}: ${file.name}`"
-                class="h-36 w-full bg-slate-100 object-cover app-dark:bg-zinc-800"
-              />
-              <figcaption class="flex items-center justify-between gap-2 p-2">
-                <span class="truncate app-text-xs app-text-normal" :title="file.name">{{
-                  file.name
-                }}</span>
-                <AppButton
-                  type="button"
-                  icon="pi pi-times"
-                  tone="secondary"
-                  appearance="text"
-                  rounded
-                  :aria-label="t('features.dev.input.removeFile')"
-                  @click="removeImage(file, index, removeFileCallback)"
+              <figure class="m-0">
+                <img
+                  :src="imagePreviews.get(file)"
+                  :alt="`${t('features.dev.input.preview')}: ${file.name}`"
+                  class="h-36 w-full bg-surface-100 object-cover app-dark:bg-surface-800"
                 />
-              </figcaption>
-            </figure>
+                <figcaption class="flex items-center justify-between gap-2 p-2">
+                  <span class="truncate app-text-xs app-text-normal" :title="file.name">{{
+                    file.name
+                  }}</span>
+                  <AppButton
+                    type="button"
+                    icon="pi pi-times"
+                    tone="secondary"
+                    appearance="text"
+                    rounded
+                    :aria-label="t('features.dev.input.removeFile')"
+                    @click="removeImage(file, index, removeFileCallback)"
+                  />
+                </figcaption>
+              </figure>
+            </AppCard>
           </div>
           <p v-else class="py-5 text-center app-text-sm app-text-muted">
             {{ t('features.dev.input.dropImages') }}
           </p>
         </template>
       </AppFileUpload>
-    </section>
+    </AppCard>
 
-    <details
-      class="rounded-xl border border-slate-200 bg-white p-4 app-dark:border-zinc-800 app-dark:bg-zinc-900"
-    >
-      <summary class="cursor-pointer app-text-sm app-text-normal font-semibold">
-        {{ t('features.dev.input.submitted') }}
-      </summary>
-      <pre class="mt-3 overflow-x-auto app-text-xs app-text-muted">{{ form }}</pre>
-    </details>
+    <AppCard variant="compact">
+      <details>
+        <summary class="cursor-pointer app-text-sm app-text-normal font-semibold">
+          {{ t('features.dev.input.submitted') }}
+        </summary>
+        <pre class="mt-3 overflow-x-auto app-text-xs app-text-muted">{{ form }}</pre>
+      </details>
+    </AppCard>
   </div>
 </template>

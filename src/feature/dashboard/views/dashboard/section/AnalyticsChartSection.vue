@@ -96,7 +96,6 @@ const chartOptions = computed<AppChartOptions>(() => {
       },
     },
     grid: {
-      borderColor: 'rgba(148, 163, 184, 0.15)',
       strokeDashArray: 4,
       xaxis: { lines: { show: false } },
       yaxis: { lines: { show: true } },
@@ -106,7 +105,6 @@ const chartOptions = computed<AppChartOptions>(() => {
       categories: chartCategories.value,
       labels: {
         style: {
-          colors: '#94a3b8',
           fontSize: '11px',
           fontWeight: 500,
         },
@@ -117,7 +115,6 @@ const chartOptions = computed<AppChartOptions>(() => {
     yaxis: {
       labels: {
         style: {
-          colors: '#94a3b8',
           fontSize: '11px',
           fontWeight: 500,
         },
@@ -135,7 +132,6 @@ const chartOptions = computed<AppChartOptions>(() => {
     markers: {
       size: 4,
       colors: currentConfig.colors,
-      strokeColors: '#ffffff',
       strokeWidth: 2,
       hover: { size: 6 },
     },
@@ -144,7 +140,7 @@ const chartOptions = computed<AppChartOptions>(() => {
 </script>
 
 <template>
-  <AppCard class="h-full border border-slate-200/80 shadow-xs app-dark:border-zinc-800">
+  <AppCard class="h-full">
     <template #title>
       <div class="flex flex-wrap items-center justify-between gap-3">
         <!-- Header Left: Icon & Metric Title -->
@@ -168,7 +164,7 @@ const chartOptions = computed<AppChartOptions>(() => {
         <div class="flex flex-wrap items-center gap-2">
           <!-- Metric Tab Pills -->
           <div
-            class="flex items-center rounded-lg bg-slate-100 p-0.5 app-text-xs font-medium app-dark:bg-zinc-800/80"
+            class="flex items-center rounded-lg bg-surface-100 p-0.5 app-text-xs font-medium app-dark:bg-surface-800/80"
           >
             <button
               v-for="(config, key) in metricConfigs"
@@ -177,7 +173,7 @@ const chartOptions = computed<AppChartOptions>(() => {
               class="rounded-md px-2.5 py-1 transition-all duration-200"
               :class="
                 activeMetric === key
-                  ? 'bg-white app-text-normal shadow-xs font-semibold app-dark:bg-zinc-700'
+                  ? 'bg-surface-0 app-text-normal shadow-xs font-semibold app-dark:bg-surface-700'
                   : 'app-text-muted app-hover-text-normal'
               "
               @click="activeMetric = key as MetricType"
@@ -188,7 +184,7 @@ const chartOptions = computed<AppChartOptions>(() => {
 
           <!-- Timeframe Pills -->
           <div
-            class="hidden sm:flex items-center rounded-lg bg-slate-100 p-0.5 app-text-xs font-medium app-dark:bg-zinc-800/80"
+            class="hidden sm:flex items-center rounded-lg bg-surface-100 p-0.5 app-text-xs font-medium app-dark:bg-surface-800/80"
           >
             <button
               v-for="tf in ['24h', '7d', '30d'] as TimeframeType[]"
@@ -230,7 +226,7 @@ const chartOptions = computed<AppChartOptions>(() => {
 
         <!-- Summary Footer Bar -->
         <div
-          class="mt-2 flex flex-wrap items-center justify-between border-t border-slate-100 pt-3 app-text-xs app-text-muted app-dark:border-zinc-800"
+          class="mt-2 flex flex-wrap items-center justify-between border-t border-surface-100 pt-3 app-text-xs app-text-muted app-dark:border-surface-800"
         >
           <div class="flex items-center gap-4">
             <span class="flex items-center gap-1.5">

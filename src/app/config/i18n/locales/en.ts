@@ -1,8 +1,6 @@
 export const en = {
   app: {
     documentTitle: 'ApexAdmin Console',
-    operational: 'Operational',
-    searchPlaceholder: 'Global Search (Ctrl + K)...',
   },
   nav: {
     groups: {

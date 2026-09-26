@@ -54,10 +54,10 @@ const { t } = useI18n({ useScope: 'global' })
       </AppCard>
     </div>
 
-    <section
-      class="space-y-3 rounded-xl border border-slate-200 bg-white p-4 app-dark:border-zinc-800 app-dark:bg-zinc-900"
-    >
-      <h3 class="app-text-sm app-text-normal font-semibold">{{ t('features.dev.card.shared') }}</h3>
+    <section class="space-y-3">
+      <h3 class="app-text-sm app-text-normal font-semibold">
+        {{ t('features.dev.card.shared') }}
+      </h3>
       <div class="grid gap-3 sm:grid-cols-2">
         <StatCard
           :title="t('features.dev.card.systemStatus')"

@@ -3,10 +3,21 @@ import PrimeCard from 'primevue/card'
 import { appComponentAttrs } from '../lib/appComponentAttrs'
 
 defineOptions({ inheritAttrs: false })
+
+const props = withDefaults(
+  defineProps<{
+    variant?: 'default' | 'compact' | 'media'
+  }>(),
+  { variant: 'default' },
+)
 </script>
 
 <template>
-  <PrimeCard v-bind="appComponentAttrs($attrs)">
+  <PrimeCard
+    class="app-card"
+    :class="`app-card--${props.variant}`"
+    v-bind="appComponentAttrs($attrs)"
+  >
     <template v-if="$slots.header" #header><slot name="header" /></template>
     <template v-if="$slots.title" #title><slot name="title" /></template>
     <template v-if="$slots.subtitle" #subtitle><slot name="subtitle" /></template>

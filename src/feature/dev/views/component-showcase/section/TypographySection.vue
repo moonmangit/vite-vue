@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
+import AppCard from '../../../../../shared/component/AppCard.vue'
 
 const { t } = useI18n({ useScope: 'global' })
 
@@ -17,9 +18,7 @@ const sizes = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl'] as const
       </p>
     </header>
 
-    <section
-      class="space-y-4 rounded-xl border border-slate-200 bg-white p-4 app-dark:border-zinc-800 app-dark:bg-zinc-900"
-    >
+    <AppCard variant="compact">
       <h3 class="app-text-md app-text-normal font-semibold">
         {{ t('features.dev.typography.sizes') }}
       </h3>
@@ -33,22 +32,18 @@ const sizes = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl'] as const
           {{ t('features.dev.typography.sample') }}
         </p>
       </div>
-    </section>
+    </AppCard>
 
-    <section
-      class="space-y-4 rounded-xl border border-slate-200 bg-white p-4 app-dark:border-zinc-800 app-dark:bg-zinc-900"
-    >
+    <AppCard variant="compact">
       <h3 class="app-text-md app-text-normal font-semibold">
         {{ t('features.dev.typography.tones') }}
       </h3>
       <p class="app-text-md app-text-normal">{{ t('features.dev.typography.normal') }}</p>
       <p class="app-text-md app-text-muted">{{ t('features.dev.typography.muted') }}</p>
       <p class="app-text-md app-text-disabled">{{ t('features.dev.typography.disabled') }}</p>
-    </section>
+    </AppCard>
 
-    <section
-      class="space-y-4 rounded-xl border border-slate-200 bg-white p-4 app-dark:border-zinc-800 app-dark:bg-zinc-900"
-    >
+    <AppCard variant="compact">
       <h3 class="app-text-md app-text-normal font-semibold">
         {{ t('features.dev.typography.customSizes') }}
       </h3>
@@ -61,11 +56,9 @@ const sizes = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl'] as const
       <p class="app-text-md app-text-normal" style="--app-font-size: 1.1em">
         {{ t('features.dev.typography.ems') }}
       </p>
-    </section>
+    </AppCard>
 
-    <section
-      class="space-y-3 rounded-xl border border-slate-200 bg-white p-4 app-dark:border-zinc-800 app-dark:bg-zinc-900"
-    >
+    <AppCard variant="compact">
       <h3 class="app-text-md app-text-normal font-semibold">
         {{ t('features.dev.typography.semanticColors') }}
       </h3>
@@ -73,6 +66,6 @@ const sizes = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl'] as const
       <p class="app-text-sm text-emerald-600 app-dark:text-emerald-400">
         {{ t('features.dev.typography.status') }}
       </p>
-    </section>
+    </AppCard>
   </div>
 </template>

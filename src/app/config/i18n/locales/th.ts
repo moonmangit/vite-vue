@@ -1,8 +1,6 @@
 export const th = {
   app: {
     documentTitle: 'คอนโซล ApexAdmin',
-    operational: 'เปิดทำงานปกติ',
-    searchPlaceholder: 'ค้นหาในระบบ (Ctrl + K)...',
   },
   nav: {
     groups: {

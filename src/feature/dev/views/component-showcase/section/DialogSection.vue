@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppButton from '../../../../../shared/component/AppButton.vue'
+import AppCard from '../../../../../shared/component/AppCard.vue'
 import AppDialog from '../../../../../shared/component/AppDialog.vue'
 import AppInputText from '../../../../../shared/component/AppInputText.vue'
 
@@ -45,9 +46,7 @@ function deleteProject() {
     </p>
 
     <div class="grid gap-4 md:grid-cols-2">
-      <section
-        class="space-y-3 rounded-xl border border-slate-200 bg-white p-4 app-dark:border-zinc-800 app-dark:bg-zinc-900"
-      >
+      <AppCard variant="compact">
         <div>
           <h3 class="app-text-sm app-text-normal font-semibold">
             {{ t('features.dev.dialog.basic') }}
@@ -57,11 +56,9 @@ function deleteProject() {
           </p>
         </div>
         <AppButton :label="t('features.dev.dialog.openBasic')" @click="basicVisible = true" />
-      </section>
+      </AppCard>
 
-      <section
-        class="space-y-3 rounded-xl border border-slate-200 bg-white p-4 app-dark:border-zinc-800 app-dark:bg-zinc-900"
-      >
+      <AppCard variant="compact">
         <div>
           <h3 class="app-text-sm app-text-normal font-semibold">
             {{ t('features.dev.dialog.form') }}
@@ -71,11 +68,9 @@ function deleteProject() {
           </p>
         </div>
         <AppButton :label="t('features.dev.dialog.openForm')" @click="formVisible = true" />
-      </section>
+      </AppCard>
 
-      <section
-        class="space-y-3 rounded-xl border border-slate-200 bg-white p-4 app-dark:border-zinc-800 app-dark:bg-zinc-900"
-      >
+      <AppCard variant="compact">
         <div>
           <h3 class="app-text-sm app-text-normal font-semibold">
             {{ t('features.dev.dialog.confirm') }}
@@ -90,11 +85,9 @@ function deleteProject() {
           appearance="outlined"
           @click="confirmVisible = true"
         />
-      </section>
+      </AppCard>
 
-      <section
-        class="space-y-3 rounded-xl border border-slate-200 bg-white p-4 app-dark:border-zinc-800 app-dark:bg-zinc-900"
-      >
+      <AppCard variant="compact">
         <div>
           <h3 class="app-text-sm app-text-normal font-semibold">
             {{ t('features.dev.dialog.maximizable') }}
@@ -108,7 +101,7 @@ function deleteProject() {
           tone="secondary"
           @click="maximizableVisible = true"
         />
-      </section>
+      </AppCard>
     </div>
 
     <AppDialog

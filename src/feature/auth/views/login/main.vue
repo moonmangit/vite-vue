@@ -4,10 +4,10 @@ import LoginForm from '../../component/LoginForm.vue'
 
 <template>
   <div
-    class="flex min-h-screen items-center justify-center p-4 bg-gradient-to-br from-slate-100 via-slate-50 to-primary-50 app-dark:from-zinc-950 app-dark:via-zinc-900 app-dark:to-primary-950/20"
+    class="flex min-h-screen items-center justify-center p-4 bg-gradient-to-br from-surface-100 via-surface-50 to-primary-50 app-dark:from-surface-950 app-dark:via-surface-900 app-dark:to-primary-950/20"
   >
     <div
-      class="w-full max-w-md rounded-2xl border border-slate-200 bg-white/90 p-8 shadow-xl backdrop-blur-md app-dark:border-zinc-800 app-dark:bg-zinc-900/90"
+      class="w-full max-w-md rounded-2xl border border-surface-200 bg-surface-0/90 p-8 shadow-xl backdrop-blur-md app-dark:border-surface-800 app-dark:bg-surface-900/90"
     >
       <div class="mb-6 text-center">
         <div
@@ -28,7 +28,7 @@ import LoginForm from '../../component/LoginForm.vue'
       <LoginForm />
 
       <div
-        class="mt-6 border-t border-slate-100 pt-4 text-center app-text-xs app-text-muted app-dark:border-zinc-800"
+        class="mt-6 border-t border-surface-100 pt-4 text-center app-text-xs app-text-muted app-dark:border-surface-800"
       >
         <span>{{ $t('features.auth.login.version') }}</span>
       </div>

@@ -19,6 +19,7 @@ const props = withDefaults(
 
 <template>
   <VueApexCharts
+    class="app-chart"
     v-bind="appComponentAttrs($attrs)"
     :type="props.type"
     :options="props.options"

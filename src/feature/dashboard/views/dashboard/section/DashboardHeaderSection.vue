@@ -20,7 +20,7 @@ const emit = defineEmits<{
 
 <template>
   <div
-    class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 pb-4 app-dark:border-zinc-800"
+    class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-surface-200 pb-4 app-dark:border-surface-800"
   >
     <div>
       <div class="flex items-center gap-2">
