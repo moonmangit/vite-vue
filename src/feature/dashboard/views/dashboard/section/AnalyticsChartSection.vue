@@ -140,81 +140,79 @@ const chartOptions = computed<AppChartOptions>(() => {
 </script>
 
 <template>
-  <AppCard class="h-full">
-    <template #title>
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <!-- Header Left: Icon & Metric Title -->
-        <div class="flex items-center gap-2">
-          <div
-            class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 app-dark:bg-indigo-950/60 app-dark:text-indigo-400"
-          >
-            <i :class="metricConfigs[activeMetric].icon" class="app-text-sm" />
-          </div>
-          <div>
-            <h3 class="app-text-sm app-text-normal font-bold tracking-tight">
-              {{ t(metricConfigs[activeMetric].labelKey) }}
-            </h3>
-            <p class="app-text-custom app-text-muted font-normal" style="--app-font-size: 11px">
-              {{ $t('features.dashboard.chart.description') }}
-            </p>
-          </div>
-        </div>
-
-        <!-- Header Right: Metric Selector & Actions -->
-        <div class="flex flex-wrap items-center gap-2">
-          <!-- Metric Tab Pills -->
-          <div
-            class="flex items-center rounded-lg bg-surface-100 p-0.5 app-text-xs font-medium app-dark:bg-surface-800/80"
-          >
-            <button
-              v-for="(config, key) in metricConfigs"
-              :key="key"
-              type="button"
-              class="rounded-md px-2.5 py-1 transition-all duration-200"
-              :class="
-                activeMetric === key
-                  ? 'bg-surface-0 app-text-normal shadow-xs font-semibold app-dark:bg-surface-700'
-                  : 'app-text-muted app-hover-text-normal'
-              "
-              @click="activeMetric = key as MetricType"
-            >
-              {{ config.unit }}
-            </button>
-          </div>
-
-          <!-- Timeframe Pills -->
-          <div
-            class="hidden sm:flex items-center rounded-lg bg-surface-100 p-0.5 app-text-xs font-medium app-dark:bg-surface-800/80"
-          >
-            <button
-              v-for="tf in ['24h', '7d', '30d'] as TimeframeType[]"
-              :key="tf"
-              type="button"
-              class="rounded-md px-2 py-1 uppercase transition-all duration-200"
-              :class="
-                activeTimeframe === tf
-                  ? 'bg-indigo-600 text-white font-semibold shadow-xs'
-                  : 'app-text-muted app-hover-text-normal'
-              "
-              @click="activeTimeframe = tf"
-            >
-              {{ tf }}
-            </button>
-          </div>
-
-          <AppButton
-            icon="pi pi-ellipsis-v"
-            tone="secondary"
-            size="small"
-            appearance="text"
-            class="p-1"
-          />
-        </div>
-      </div>
-    </template>
-
+  <AppCard variant="full" class="h-full">
     <template #content>
-      <div class="mt-3">
+      <div class="space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <!-- Header Left: Icon & Metric Title -->
+          <div class="flex items-center gap-2">
+            <div
+              class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 app-dark:bg-indigo-950/60 app-dark:text-indigo-400"
+            >
+              <i :class="metricConfigs[activeMetric].icon" class="app-text-sm" />
+            </div>
+            <div>
+              <h3 class="app-text-sm app-text-normal font-bold tracking-tight">
+                {{ t(metricConfigs[activeMetric].labelKey) }}
+              </h3>
+              <p class="app-text-custom app-text-muted font-normal" style="--app-font-size: 11px">
+                {{ $t('features.dashboard.chart.description') }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Header Right: Metric Selector & Actions -->
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- Metric Tab Pills -->
+            <div
+              class="flex items-center rounded-lg bg-surface-100 p-0.5 app-text-xs font-medium app-dark:bg-surface-800/80"
+            >
+              <button
+                v-for="(config, key) in metricConfigs"
+                :key="key"
+                type="button"
+                class="rounded-md px-2.5 py-1 transition-all duration-200"
+                :class="
+                  activeMetric === key
+                    ? 'bg-surface-0 app-text-normal shadow-xs font-semibold app-dark:bg-surface-700'
+                    : 'app-text-muted app-hover-text-normal'
+                "
+                @click="activeMetric = key as MetricType"
+              >
+                {{ config.unit }}
+              </button>
+            </div>
+
+            <!-- Timeframe Pills -->
+            <div
+              class="hidden sm:flex items-center rounded-lg bg-surface-100 p-0.5 app-text-xs font-medium app-dark:bg-surface-800/80"
+            >
+              <button
+                v-for="tf in ['24h', '7d', '30d'] as TimeframeType[]"
+                :key="tf"
+                type="button"
+                class="rounded-md px-2 py-1 uppercase transition-all duration-200"
+                :class="
+                  activeTimeframe === tf
+                    ? 'bg-indigo-600 text-white font-semibold shadow-xs'
+                    : 'app-text-muted app-hover-text-normal'
+                "
+                @click="activeTimeframe = tf"
+              >
+                {{ tf }}
+              </button>
+            </div>
+
+            <AppButton
+              icon="pi pi-ellipsis-v"
+              tone="secondary"
+              size="small"
+              appearance="text"
+              class="p-1"
+            />
+          </div>
+        </div>
+
         <!-- Recharts / ApexCharts Main Area Chart -->
         <AppChart
           type="area"

@@ -8,20 +8,16 @@ defineProps<{
 </script>
 
 <template>
-  <AppCard class="h-full">
-    <template #title>
-      <div class="flex items-center justify-between">
+  <AppCard variant="full" class="h-full">
+    <template #content>
+      <div class="space-y-4">
         <div class="flex items-center gap-2">
           <i class="pi pi-server app-text-sm text-primary-600" />
           <span class="app-text-xs app-text-normal font-bold uppercase tracking-wider">
             {{ $t('features.dashboard.systemStatus.title') }}
           </span>
         </div>
-      </div>
-    </template>
 
-    <template #content>
-      <div class="mt-2 space-y-4">
         <div
           v-for="node in nodeCluster"
           :key="node.name"

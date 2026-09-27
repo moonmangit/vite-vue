@@ -76,7 +76,7 @@ watch(
   <AppToastOutlet />
 
   <div
-    class="h-screen w-screen overflow-hidden flex flex-col app-surface app-text-normal transition-colors"
+    class="fixed inset-0 w-full overflow-clip flex flex-col app-surface app-text-normal transition-colors"
   >
     <!-- Layout Section: Top Navigation Bar -->
     <TopNavSection
@@ -102,7 +102,7 @@ watch(
 
       <!-- Main RouterView Area -->
       <main
-        class="flex-1 h-full min-w-0 overflow-y-auto p-4 sm:p-6 app-surface transition-opacity duration-150"
+        class="flex-1 h-full min-w-0 overflow-x-hidden overflow-y-auto p-4 sm:p-6 app-surface transition-opacity duration-150"
         :class="isSidebarFlyoutActive ? 'opacity-40' : 'opacity-100'"
       >
         <RouterView />

@@ -6,9 +6,9 @@ defineOptions({ inheritAttrs: false })
 
 const props = withDefaults(
   defineProps<{
-    variant?: 'default' | 'compact' | 'media'
+    variant?: 'blank' | 'full'
   }>(),
-  { variant: 'default' },
+  { variant: 'blank' },
 )
 </script>
 
@@ -19,7 +19,12 @@ const props = withDefaults(
     v-bind="appComponentAttrs($attrs)"
   >
     <template v-if="$slots.header" #header><slot name="header" /></template>
-    <template v-if="$slots.title" #title><slot name="title" /></template>
+    <template v-if="$slots.title || $slots['header-icon']" #title>
+      <div class="app-card__title-row">
+        <slot name="title" />
+        <slot name="header-icon" />
+      </div>
+    </template>
     <template v-if="$slots.subtitle" #subtitle><slot name="subtitle" /></template>
     <template v-if="$slots.content || $slots.default" #content>
       <slot name="content"><slot /></slot>

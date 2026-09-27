@@ -2,19 +2,80 @@
 import AppTag from './AppTag.vue'
 import AppCard from './AppCard.vue'
 
-defineProps<{
-  title: string
-  value: string | number
-  trend?: string
-  trendType?: 'up' | 'down' | 'neutral'
-  icon?: string
-  subtitle?: string
-  badgeText?: string
-}>()
+const props = withDefaults(
+  defineProps<{
+    title: string
+    value: string | number
+    trend?: string
+    trendType?: 'up' | 'down' | 'neutral'
+    icon?: string
+    subtitle?: string
+    badgeText?: string
+    variant?: 'blank' | 'full'
+  }>(),
+  {
+    trend: undefined,
+    trendType: undefined,
+    icon: undefined,
+    subtitle: undefined,
+    badgeText: undefined,
+    variant: 'blank',
+  },
+)
 </script>
 
 <template>
-  <AppCard variant="compact">
+  <AppCard v-if="props.variant === 'full'" variant="full">
+    <template #title>{{ title }}</template>
+    <template v-if="subtitle" #subtitle>{{ subtitle }}</template>
+    <template #header-icon>
+      <div
+        v-if="icon"
+        class="grid size-8 place-items-center rounded-lg bg-surface-100 app-text-muted app-dark:bg-surface-800"
+      >
+        <i :class="['app-text-xs', icon]" aria-hidden="true" />
+      </div>
+      <div v-else-if="badgeText" class="inline-flex items-center gap-2">
+        <i class="pi pi-circle-fill app-text-xs text-emerald-500" aria-hidden="true" />
+        <AppTag
+          :value="badgeText"
+          tone="secondary"
+          class="app-text-custom"
+          style="--app-font-size: 10px"
+        />
+      </div>
+    </template>
+    <template #content>
+      <div class="flex items-baseline justify-between gap-2">
+        <span class="app-text-2xl app-text-normal font-black tracking-tight">{{ value }}</span>
+        <span
+          v-if="trend"
+          class="inline-flex items-center gap-1 app-text-xs font-bold"
+          :class="{
+            'text-emerald-600 app-dark:text-emerald-400': trendType === 'up',
+            'text-rose-600 app-dark:text-rose-400': trendType === 'down',
+            'app-text-muted': !trendType || trendType === 'neutral',
+          }"
+        >
+          <i
+            v-if="trendType"
+            style="--app-font-size: 10px"
+            :class="[
+              'app-text-custom',
+              trendType === 'up'
+                ? 'pi pi-arrow-up-right'
+                : trendType === 'down'
+                  ? 'pi pi-arrow-down-right'
+                  : 'pi pi-minus',
+            ]"
+          />
+          {{ trend }}
+        </span>
+      </div>
+    </template>
+  </AppCard>
+
+  <AppCard v-else variant="blank">
     <div class="flex items-center justify-between gap-2">
       <span class="app-text-xs app-text-muted font-semibold uppercase tracking-wider">
         {{ title }}
@@ -33,12 +94,8 @@ defineProps<{
         style="--app-font-size: 10px"
       />
     </div>
-
     <div class="flex items-baseline justify-between gap-2">
-      <span class="app-text-2xl app-text-normal font-black tracking-tight">
-        {{ value }}
-      </span>
-
+      <span class="app-text-2xl app-text-normal font-black tracking-tight">{{ value }}</span>
       <span
         v-if="trend"
         class="inline-flex items-center gap-1 app-text-xs font-bold"
@@ -63,7 +120,6 @@ defineProps<{
         {{ trend }}
       </span>
     </div>
-
     <p v-if="subtitle" class="m-0 app-text-custom app-text-muted" style="--app-font-size: 11px">
       {{ subtitle }}
     </p>

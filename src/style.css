@@ -3,6 +3,8 @@
 @custom-variant app-dark (&:where(.app-dark, .app-dark *));
 
 @theme {
+  --breakpoint-showcase: 87.5rem;
+  --container-9xl: 96rem;
   --color-primary-50: var(--brand-primary-50);
   --color-primary-100: var(--brand-primary-100);
   --color-primary-200: var(--brand-primary-200);
@@ -188,28 +190,107 @@
 
 .app-card.p-card {
   border: 1px solid var(--app-surface-border-color);
+  border-radius: 1rem;
+}
+
+.app-card .p-card-title {
+  color: var(--app-tone-normal);
+  font-size: var(--app-type-md);
+  font-weight: 600;
+  line-height: 1.5rem;
+}
+
+.app-card__title-row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.app-card .p-card-subtitle {
+  margin: 0;
+  color: var(--app-tone-muted);
+  font-size: var(--app-type-sm);
+  line-height: 1.25rem;
+}
+
+.app-card--blank .p-card-body {
+  gap: 0;
+  padding: 1rem;
+}
+
+.app-card--blank .p-card-caption {
+  gap: 0.25rem;
+  padding: 0 0 0.75rem;
+}
+
+.app-card--blank .p-card-content {
+  padding: 0;
+}
+
+.app-card--blank .p-card-footer {
+  padding: 0.75rem 0 0;
+}
+
+.app-card--full .p-card-body {
+  gap: 0;
+  padding: 0;
+}
+
+.app-card--full .p-card-caption {
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--app-surface-border-color);
+  padding: 1rem;
 }
 
 .app-surface-border {
   border-color: var(--app-surface-border-color);
 }
 
-.app-card--compact .p-card-body {
+.app-card--full .p-card-content {
   padding: 1rem;
 }
 
-.app-card--compact .p-card-content {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+.app-card--full .p-card-footer {
+  padding: 0 1rem 1rem;
 }
 
-.app-card--media {
-  overflow: hidden;
+.form-json-preview {
+  --app-json-key: #1d4ed8;
+  --app-json-string: #047857;
+  --app-json-number: #b45309;
+  --app-json-literal: #7c3aed;
+  --app-json-punctuation: #71717a;
+  color: var(--app-tone-normal);
 }
 
-.app-card--media .p-card-body {
-  padding: 0;
+.app-dark .form-json-preview {
+  --app-json-key: #93c5fd;
+  --app-json-string: #86efac;
+  --app-json-number: #fcd34d;
+  --app-json-literal: #c4b5fd;
+  --app-json-punctuation: #a1a1aa;
+}
+
+.form-json-preview .hljs-attr {
+  color: var(--app-json-key);
+}
+
+.form-json-preview .hljs-string {
+  color: var(--app-json-string);
+}
+
+.form-json-preview .hljs-number {
+  color: var(--app-json-number);
+}
+
+.form-json-preview .hljs-literal {
+  color: var(--app-json-literal);
+}
+
+.form-json-preview .hljs-punctuation {
+  color: var(--app-json-punctuation);
 }
 
 .app-chart .apexcharts-xaxis text,

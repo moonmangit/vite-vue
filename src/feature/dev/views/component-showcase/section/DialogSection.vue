@@ -1,19 +1,30 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppButton from '../../../../../shared/component/AppButton.vue'
-import AppCard from '../../../../../shared/component/AppCard.vue'
 import AppDialog from '../../../../../shared/component/AppDialog.vue'
 import AppInputText from '../../../../../shared/component/AppInputText.vue'
+import ShowcaseArticle from '../component/ShowcaseArticle.vue'
 
 const { t } = useI18n({ useScope: 'global' })
 const basicVisible = ref(false)
+const basicFooterVisible = ref(false)
 const formVisible = ref(false)
 const confirmVisible = ref(false)
 const maximizableVisible = ref(false)
+const optionsVisible = ref(false)
+const modelessVisible = ref(false)
 const projectName = ref('')
 const lastAction = ref('')
 
+function variants(entries: [string, string][]) {
+  return computed(() => entries.map(([value, labelKey]) => ({ value, label: t(labelKey) })))
+}
+
+const basicVariants = variants([
+  ['plain', 'features.dev.variants.default'],
+  ['footer', 'features.dev.variants.withFooter'],
+])
 function saveProject() {
   lastAction.value = t('features.dev.dialog.saved')
   projectName.value = ''
@@ -27,14 +38,12 @@ function deleteProject() {
 </script>
 
 <template>
-  <div class="space-y-5">
-    <header>
-      <h2 class="app-text-lg app-text-normal font-semibold">
+  <section id="dialog" class="space-y-8" aria-labelledby="dialog-title">
+    <header class="space-y-1">
+      <h2 id="dialog-title" class="app-text-lg app-text-normal font-semibold">
         {{ t('features.dev.dialog.title') }}
       </h2>
-      <p class="mt-1 app-text-sm app-text-muted">
-        {{ t('features.dev.dialog.description') }}
-      </p>
+      <p class="app-text-sm app-text-muted">{{ t('features.dev.dialog.description') }}</p>
     </header>
 
     <p
@@ -45,67 +54,88 @@ function deleteProject() {
       {{ lastAction }}
     </p>
 
-    <div class="grid gap-4 md:grid-cols-2">
-      <AppCard variant="compact">
-        <div>
-          <h3 class="app-text-sm app-text-normal font-semibold">
-            {{ t('features.dev.dialog.basic') }}
-          </h3>
-          <p class="mt-1 app-text-sm app-text-muted">
+    <div class="space-y-8">
+      <ShowcaseArticle
+        id="dialog-basic"
+        :title="t('features.dev.dialog.basic')"
+        :variants="basicVariants"
+      >
+        <template #plain>
+          <p class="m-0 mb-4 app-text-sm app-text-muted">
             {{ t('features.dev.dialog.basicDescription') }}
           </p>
-        </div>
-        <AppButton :label="t('features.dev.dialog.openBasic')" @click="basicVisible = true" />
-      </AppCard>
-
-      <AppCard variant="compact">
-        <div>
-          <h3 class="app-text-sm app-text-normal font-semibold">
-            {{ t('features.dev.dialog.form') }}
-          </h3>
-          <p class="mt-1 app-text-sm app-text-muted">
-            {{ t('features.dev.dialog.formDescription') }}
+          <AppButton :label="t('features.dev.dialog.openBasic')" @click="basicVisible = true" />
+        </template>
+        <template #footer>
+          <p class="m-0 mb-4 app-text-sm app-text-muted">
+            {{ t('features.dev.dialog.basicDescription') }}
           </p>
-        </div>
+          <AppButton
+            :label="t('features.dev.variants.withFooter')"
+            @click="basicFooterVisible = true"
+          />
+        </template>
+      </ShowcaseArticle>
+
+      <ShowcaseArticle id="dialog-form" :title="t('features.dev.dialog.form')">
+        <p class="m-0 mb-4 app-text-sm app-text-muted">
+          {{ t('features.dev.dialog.formDescription') }}
+        </p>
         <AppButton :label="t('features.dev.dialog.openForm')" @click="formVisible = true" />
-      </AppCard>
+      </ShowcaseArticle>
 
-      <AppCard variant="compact">
-        <div>
-          <h3 class="app-text-sm app-text-normal font-semibold">
-            {{ t('features.dev.dialog.confirm') }}
-          </h3>
-          <p class="mt-1 app-text-sm app-text-muted">
-            {{ t('features.dev.dialog.confirmDescription') }}
-          </p>
-        </div>
+      <ShowcaseArticle id="dialog-confirm" :title="t('features.dev.dialog.confirm')">
+        <p class="m-0 mb-4 app-text-sm app-text-muted">
+          {{ t('features.dev.dialog.confirmDescription') }}
+        </p>
         <AppButton
           :label="t('features.dev.dialog.openConfirm')"
-          tone="danger"
+          tone="secondary"
           appearance="outlined"
           @click="confirmVisible = true"
         />
-      </AppCard>
+      </ShowcaseArticle>
 
-      <AppCard variant="compact">
-        <div>
-          <h3 class="app-text-sm app-text-normal font-semibold">
-            {{ t('features.dev.dialog.maximizable') }}
-          </h3>
-          <p class="mt-1 app-text-sm app-text-muted">
-            {{ t('features.dev.dialog.maximizableDescription') }}
-          </p>
-        </div>
+      <ShowcaseArticle id="dialog-maximizable" :title="t('features.dev.dialog.maximizable')">
+        <p class="m-0 mb-4 app-text-sm app-text-muted">
+          {{ t('features.dev.dialog.maximizableDescription') }}
+        </p>
         <AppButton
           :label="t('features.dev.dialog.openMaximizable')"
           tone="secondary"
           @click="maximizableVisible = true"
         />
-      </AppCard>
+      </ShowcaseArticle>
+
+      <ShowcaseArticle id="dialog-options" :title="t('features.dev.dialog.options')">
+        <p class="m-0 mb-4 app-text-sm app-text-muted">
+          {{ t('features.dev.dialog.optionsDescription') }}
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <AppButton :label="t('features.dev.dialog.openOptions')" @click="optionsVisible = true" />
+          <AppButton
+            :label="t('features.dev.dialog.openModeless')"
+            tone="secondary"
+            appearance="outlined"
+            @click="modelessVisible = true"
+          />
+        </div>
+      </ShowcaseArticle>
     </div>
 
     <AppDialog
       v-model="basicVisible"
+      :header="t('features.dev.dialog.basic')"
+      width="32rem"
+      :breakpoints="{ '960px': '75vw', '640px': '95vw' }"
+    >
+      <p class="m-0 app-text-sm app-text-muted leading-6">
+        {{ t('features.dev.dialog.basicContent') }}
+      </p>
+    </AppDialog>
+
+    <AppDialog
+      v-model="basicFooterVisible"
       :header="t('features.dev.dialog.basic')"
       width="32rem"
       :breakpoints="{ '960px': '75vw', '640px': '95vw' }"
@@ -118,7 +148,7 @@ function deleteProject() {
           :label="t('features.dev.dialog.close')"
           tone="secondary"
           appearance="text"
-          @click="basicVisible = false"
+          @click="basicFooterVisible = false"
         />
       </template>
     </AppDialog>
@@ -188,5 +218,41 @@ function deleteProject() {
         {{ t('features.dev.dialog.maximizableContent') }}
       </p>
     </AppDialog>
-  </div>
+
+    <AppDialog
+      v-model="optionsVisible"
+      :header="t('features.dev.dialog.options')"
+      width="32rem"
+      :closable="false"
+      :close-on-escape="false"
+      dismissable-mask
+      draggable
+      :breakpoints="{ '960px': '75vw', '640px': '95vw' }"
+    >
+      <p class="m-0 mb-4 app-text-sm app-text-muted leading-6">
+        {{ t('features.dev.dialog.optionsDescription') }}
+      </p>
+      <AppButton :label="t('features.dev.dialog.closeOptions')" @click="optionsVisible = false" />
+    </AppDialog>
+
+    <AppDialog
+      v-model="modelessVisible"
+      :header="t('features.dev.dialog.modeless')"
+      :modal="false"
+      width="28rem"
+      :breakpoints="{ '640px': '95vw' }"
+    >
+      <p class="m-0 app-text-sm app-text-muted leading-6">
+        {{ t('features.dev.dialog.modelessContent') }}
+      </p>
+      <template #footer>
+        <AppButton
+          :label="t('features.dev.dialog.close')"
+          tone="secondary"
+          appearance="text"
+          @click="modelessVisible = false"
+        />
+      </template>
+    </AppDialog>
+  </section>
 </template>

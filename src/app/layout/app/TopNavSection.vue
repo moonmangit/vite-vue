@@ -1,10 +1,17 @@
 <script setup lang="ts">
+import { Icon } from '@iconify/vue'
 import { RouterLink } from 'vue-router'
 import type { User } from '../../../feature/auth/store/auth'
 import AppAvatar from '../../../shared/component/AppAvatar.vue'
 import AppButton from '../../../shared/component/AppButton.vue'
 import AppSelect from '../../../shared/component/AppSelect.vue'
 import AppToggleSwitch from '../../../shared/component/AppToggleSwitch.vue'
+
+const logoVue = {
+  width: 32,
+  height: 32,
+  body: '<path fill="currentColor" d="M24.9 3.9L16 19.4L7.1 3.9H2l14 24.3L30 3.9z"/><path fill="currentColor" d="m16 9.5l-3.2-5.6H8.1L16 17.5l7.9-13.6h-4.6z"/>',
+}
 
 defineProps<{
   locale: string
@@ -37,15 +44,10 @@ const emit = defineEmits<{
         />
 
         <RouterLink to="/" class="flex items-center gap-2.5 no-underline">
-          <span
-            class="grid size-8 place-items-center rounded-lg bg-primary-600 app-text-sm font-black text-white shadow-sm"
-          >
-            A
-          </span>
-          <span
-            class="hidden sm:inline-block app-text-md app-text-normal font-black tracking-tight"
-          >
-            Apex<span class="text-primary-600">Admin</span>
+          <Icon :icon="logoVue" class="size-8 shrink-0 app-text-normal" aria-hidden="true" />
+          <span class="flex flex-col leading-tight">
+            <span class="app-text-sm app-text-normal font-black tracking-tight">Vue admin</span>
+            <span class="app-text-xs app-text-muted">complex administration.</span>
           </span>
         </RouterLink>
       </div>
