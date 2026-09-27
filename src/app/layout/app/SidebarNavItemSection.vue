@@ -2,7 +2,6 @@
 import { computed, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import type { NavigationItem } from '../../../shared/navigation/main'
-import AppTag from '../../../shared/component/AppTag.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -14,6 +13,10 @@ const props = withDefaults(
     depth: 0,
   },
 )
+
+const emit = defineEmits<{
+  (event: 'activateFlyout', item: NavigationItem, anchor: HTMLElement): void
+}>()
 
 const route = useRoute()
 
@@ -75,15 +78,21 @@ function toggleExpand(e: Event) {
     isExpanded.value = !isExpanded.value
   }
 }
+
+function activateFlyout(event: FocusEvent | MouseEvent) {
+  if (props.isSidebarCollapsed && props.depth === 0) {
+    emit('activateFlyout', props.item, event.currentTarget as HTMLElement)
+  }
+}
 </script>
 
 <template>
-  <div class="relative w-full" :class="isSidebarCollapsed && depth === 0 ? 'group/flyout' : ''">
+  <div class="relative w-full" @mouseenter="activateFlyout" @focusin="activateFlyout">
     <!-- Main Item Header Link / Button -->
     <component
       :is="item.to && !hasChildren ? RouterLink : 'div'"
       :to="item.to && !hasChildren ? item.to : undefined"
-      role="button"
+      :role="item.to && !hasChildren ? undefined : 'button'"
       :tabindex="item.statusState === 'muted' ? -1 : 0"
       class="group relative flex h-9 shrink-0 items-center justify-between rounded-lg px-2.5 app-text-sm font-semibold select-none transition-all duration-150 cursor-pointer"
       :class="[
@@ -180,76 +189,16 @@ function toggleExpand(e: Event) {
       </div>
     </component>
 
-    <!-- FLOATING OVERFLOW POPPER / FLYOUT PANEL (For Minimized/Collapsed Sidebar Mode - Zero-gap hit bridge) -->
-    <div
-      v-if="isSidebarCollapsed && depth === 0"
-      class="absolute left-full top-0 pl-2.5 z-50 transition-all duration-200 opacity-0 pointer-events-none -translate-x-1 group-hover/flyout:opacity-100 group-hover/flyout:pointer-events-auto group-hover/flyout:translate-x-0"
-    >
-      <div
-        class="relative min-w-56 max-w-72 rounded-xl border border-surface-200/90 bg-surface-0/95 p-3 shadow-xl backdrop-blur-md app-dark:border-surface-800 app-dark:bg-surface-900/95 before:absolute before:-left-4 before:top-0 before:bottom-0 before:w-4 before:content-['']"
-      >
-        <!-- Flyout Header Title -->
-        <div
-          class="flex items-center justify-between gap-2 pb-2 border-b border-surface-100 app-dark:border-surface-800/80"
-        >
-          <div class="flex items-center gap-2 min-w-0">
-            <i
-              v-if="item.icon"
-              :class="[item.icon, 'app-text-sm text-primary-600 app-dark:text-primary-400']"
-            />
-            <span class="app-text-sm app-text-normal font-bold truncate">
-              {{ item.labelKey ? $t(item.labelKey) : item.label }}
-            </span>
-          </div>
-          <AppTag
-            v-if="item.badge"
-            :value="item.badge.value"
-            :tone="badgeTone(item.badge.severity)"
-            class="app-text-sm px-1.5 py-0 font-mono font-bold uppercase rounded-md shadow-2xs leading-none"
-          />
-        </div>
-
-        <!-- Flyout Body: Children Nested Navigation Structure -->
-        <div v-if="hasChildren" class="mt-2 space-y-1">
-          <SidebarNavItemSection
-            v-for="child in item.children"
-            :key="child.id"
-            :item="child"
-            :is-sidebar-collapsed="false"
-            :depth="1"
-          />
-        </div>
-        <div v-else-if="item.to" class="mt-2 app-text-sm app-text-muted">
-          <RouterLink
-            :to="item.to"
-            class="inline-flex items-center gap-1.5 app-text-sm text-primary-600 font-medium hover:underline app-dark:text-primary-400"
-          >
-            <span>{{
-              $t('shared.navigation.openItem', {
-                item: item.labelKey ? $t(item.labelKey) : item.label,
-              })
-            }}</span>
-            <i class="pi pi-arrow-right app-text-sm" />
-          </RouterLink>
-        </div>
-      </div>
-    </div>
-
     <!-- CSS Grid Auto-Height Expansion Container (For Expanded Sidebar Mode) -->
     <div
       v-if="hasChildren && !isSidebarCollapsed"
-      class="grid transition-all duration-300 ease-in-out"
+      class="grid transition-all duration-150 ease-in-out"
       :class="isExpanded ? 'grid-rows-[1fr] opacity-100 mt-1' : 'grid-rows-[0fr] opacity-0 mt-0'"
     >
       <div class="overflow-hidden">
         <!-- Nested Vertical Guideline Container -->
         <div
-          class="ml-3.5 pl-2 border-l transition-colors duration-200 space-y-1 my-1"
-          :class="
-            hasActiveChild
-              ? 'border-primary-300/70 app-dark:border-primary-500/40'
-              : 'border-surface-200/60 app-dark:border-surface-800/60'
-          "
+          class="ml-3.5 pl-2 border-l border-surface-200 app-dark:border-surface-700 space-y-1 my-1"
         >
           <SidebarNavItemSection
             v-for="child in item.children"

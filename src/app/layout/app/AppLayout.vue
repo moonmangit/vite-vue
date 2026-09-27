@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useDark, useStorage, useToggle } from '@vueuse/core'
-import { watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterView, useRouter } from 'vue-router'
 import { setAppLocale, type Locale } from '../../../app/config/i18n/main'
@@ -18,6 +18,7 @@ const { locale } = useI18n()
 const authStore = useAuthStore()
 
 const isSidebarCollapsed = useStorage('app_sidebar_collapsed', false)
+const isSidebarFlyoutActive = ref(false)
 
 const languageOptions = [
   { label: 'English', value: 'en' },
@@ -96,10 +97,14 @@ watch(
         :is-sidebar-collapsed="isSidebarCollapsed"
         :sidebar-groups="sidebarGroups"
         @toggle-sidebar="toggleSidebar"
+        @flyout-active-change="isSidebarFlyoutActive = $event"
       />
 
       <!-- Main RouterView Area -->
-      <main class="flex-1 h-full min-w-0 overflow-y-auto p-4 sm:p-6 app-surface">
+      <main
+        class="flex-1 h-full min-w-0 overflow-y-auto p-4 sm:p-6 app-surface transition-opacity duration-150"
+        :class="isSidebarFlyoutActive ? 'opacity-40' : 'opacity-100'"
+      >
         <RouterView />
       </main>
     </div>
