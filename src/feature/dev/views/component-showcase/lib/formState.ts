@@ -1,3 +1,30 @@
+import type { AppFileUploadModel } from '../../../../../shared/component/AppFileUpload.types'
+
+export interface ShowcaseAdditionalInputState {
+  textSmall: string
+  textMedium: string
+  textLarge: string
+  passwordFeedback: string
+  passwordInvalid: string
+  descriptionInvalid: string
+  descriptionAutoResize: string
+  numberSmall: number | null
+  numberLarge: number | null
+  numberInvalid: number | null
+  environmentInvalid: string | null
+  environmentLarge: string | null
+  teamsAlternate: string[]
+  teamsInvalid: string[]
+  checkboxSmall: boolean
+  checkboxLarge: boolean
+  checkboxInvalid: boolean
+  checkboxIndeterminate: boolean
+  radioSize: string
+  radioInvalid: string
+  switchInvalid: boolean
+  switchOn: boolean
+}
+
 export interface ShowcaseFormState {
   name: string
   email: string
@@ -12,6 +39,14 @@ export interface ShowcaseFormState {
   permissions: string[]
   maintenanceMode: boolean
   plan: string
+  additionalInputs: ShowcaseAdditionalInputState
+  selectedFiles: AppFileUploadModel
+  uploadedFiles: AppFileUploadModel
+  selectedImage: AppFileUploadModel
+  selectedImages: AppFileUploadModel
+  projectName: string
+  dataTableSearch: string
+  dataTableTeam: string
 }
 
 export function createShowcaseFormState(): ShowcaseFormState {
@@ -29,5 +64,36 @@ export function createShowcaseFormState(): ShowcaseFormState {
     permissions: ['read'],
     maintenanceMode: false,
     plan: 'growth',
+    additionalInputs: {
+      textSmall: '',
+      textMedium: '',
+      textLarge: '',
+      passwordFeedback: 'Example!Password9',
+      passwordInvalid: 'weak',
+      descriptionInvalid: '',
+      descriptionAutoResize: 'Add more lines to see the text area grow with its content.',
+      numberSmall: 24,
+      numberLarge: 24,
+      numberInvalid: -1,
+      environmentInvalid: null,
+      environmentLarge: 'production',
+      teamsAlternate: ['platform', 'design'],
+      teamsInvalid: [],
+      checkboxSmall: true,
+      checkboxLarge: true,
+      checkboxInvalid: false,
+      checkboxIndeterminate: false,
+      radioSize: 'small',
+      radioInvalid: '',
+      switchInvalid: false,
+      switchOn: true,
+    },
+    selectedFiles: [],
+    uploadedFiles: [],
+    selectedImage: null,
+    selectedImages: [],
+    projectName: '',
+    dataTableSearch: '',
+    dataTableTeam: '',
   }
 }

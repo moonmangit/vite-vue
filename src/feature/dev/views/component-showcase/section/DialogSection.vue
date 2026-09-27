@@ -5,8 +5,11 @@ import AppButton from '../../../../../shared/component/AppButton.vue'
 import AppDialog from '../../../../../shared/component/AppDialog.vue'
 import AppInputText from '../../../../../shared/component/AppInputText.vue'
 import ShowcaseArticle from '../component/ShowcaseArticle.vue'
+import type { ShowcaseFormState } from '../lib/formState'
 
 const { t } = useI18n({ useScope: 'global' })
+const props = defineProps<{ form: ShowcaseFormState }>()
+const form = props.form
 const basicVisible = ref(false)
 const basicFooterVisible = ref(false)
 const formVisible = ref(false)
@@ -14,7 +17,6 @@ const confirmVisible = ref(false)
 const maximizableVisible = ref(false)
 const optionsVisible = ref(false)
 const modelessVisible = ref(false)
-const projectName = ref('')
 const lastAction = ref('')
 
 function variants(entries: [string, string][]) {
@@ -27,7 +29,7 @@ const basicVariants = variants([
 ])
 function saveProject() {
   lastAction.value = t('features.dev.dialog.saved')
-  projectName.value = ''
+  form.projectName = ''
   formVisible.value = false
 }
 
@@ -165,7 +167,7 @@ function deleteProject() {
         </label>
         <AppInputText
           id="showcase-project-name"
-          v-model="projectName"
+          v-model="form.projectName"
           :placeholder="t('features.dev.dialog.projectPlaceholder')"
           autofocus
           fluid
@@ -181,7 +183,7 @@ function deleteProject() {
           <AppButton
             type="submit"
             :label="t('features.dev.dialog.save')"
-            :disabled="!projectName.trim()"
+            :disabled="!form.projectName.trim()"
           />
         </div>
       </form>

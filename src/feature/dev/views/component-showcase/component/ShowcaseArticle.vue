@@ -37,7 +37,11 @@ const props = withDefaults(
 
 const { t } = useI18n({ useScope: 'global' })
 const moduleKey = computed(() => props.id.split('-')[0])
-const subtitle = computed(() => props.subtitle ?? t(`features.dev.${moduleKey.value}.description`))
+const subtitle = computed(
+  () =>
+    props.subtitle ??
+    (moduleKey.value === 'input' ? '' : t(`features.dev.${moduleKey.value}.description`)),
+)
 const icon = computed(() => props.icon ?? moduleIcons[moduleKey.value] ?? 'pi pi-circle')
 const activeVariant = ref(props.variants?.[0]?.value ?? '')
 </script>
@@ -48,7 +52,7 @@ const activeVariant = ref(props.variants?.[0]?.value ?? '')
       <template #title>
         <span :id="`${id}-title`">{{ title }}</span>
       </template>
-      <template #subtitle>{{ subtitle }}</template>
+      <template v-if="subtitle" #subtitle>{{ subtitle }}</template>
       <template #header-icon>
         <i :class="icon" aria-hidden="true" />
       </template>

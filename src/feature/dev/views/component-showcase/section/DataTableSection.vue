@@ -12,6 +12,7 @@ import type {
   DataTableState,
 } from '../../../../../shared/component/dataTable.types'
 import ShowcaseArticle from '../component/ShowcaseArticle.vue'
+import type { ShowcaseFormState } from '../lib/formState'
 
 type Person = {
   id: number
@@ -26,6 +27,8 @@ type Person = {
 }
 
 const { locale, t } = useI18n({ useScope: 'global' })
+const props = defineProps<{ form: ShowcaseFormState }>()
+const form = props.form
 const rows: Person[] = [
   {
     id: 1,
@@ -73,8 +76,6 @@ const rows: Person[] = [
   },
 ]
 
-const search = ref('')
-const teamFilter = ref('')
 const sortField = ref('name')
 const sortOrder = ref<1 | -1>(1)
 const singleSelection = ref<unknown | null>(null)
@@ -123,9 +124,9 @@ const groupHeaders = computed<DataTableHeader[]>(() => [
   { field: 'status', header: t('features.dev.dataTable.status'), format: 'custom' },
 ])
 const filteredRows = computed(() => {
-  const query = search.value.trim().toLocaleLowerCase(locale.value)
+  const query = form.dataTableSearch.trim().toLocaleLowerCase(locale.value)
   return rows
-    .filter((person) => !teamFilter.value || person.team === teamFilter.value)
+    .filter((person) => !form.dataTableTeam || person.team === form.dataTableTeam)
     .filter(
       (person) =>
         !query ||
@@ -181,12 +182,17 @@ function selectedName(row: unknown) {
       <div class="mb-3 flex flex-wrap items-end gap-3">
         <label class="grid gap-1 app-text-xs app-text-muted">
           {{ t('features.dev.dataTable.search') }}
-          <AppInputText id="data-table-search" v-model="search" type="search" size="small" />
+          <AppInputText
+            id="data-table-search"
+            v-model="form.dataTableSearch"
+            type="search"
+            size="small"
+          />
         </label>
         <label class="grid gap-1 app-text-xs app-text-muted">
           {{ t('features.dev.dataTable.team') }}
           <AppSelect
-            v-model="teamFilter"
+            v-model="form.dataTableTeam"
             input-id="data-table-team-filter"
             :options="teamOptions"
             option-label="label"

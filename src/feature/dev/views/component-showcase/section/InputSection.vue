@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onUnmounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import AppButton from '../../../../../shared/component/AppButton.vue'
 import AppCheckbox from '../../../../../shared/component/AppCheckbox.vue'
 import AppFileUpload from '../../../../../shared/component/AppFileUpload.vue'
 import AppInputNumber from '../../../../../shared/component/AppInputNumber.vue'
@@ -12,14 +11,14 @@ import AppRadioButton from '../../../../../shared/component/AppRadioButton.vue'
 import AppSelect from '../../../../../shared/component/AppSelect.vue'
 import AppTextarea from '../../../../../shared/component/AppTextarea.vue'
 import AppToggleSwitch from '../../../../../shared/component/AppToggleSwitch.vue'
-import ImageUploadVariant from '../component/ImageUploadVariant.vue'
+import type { AppFileUploadHandler } from '../../../../../shared/component/AppFileUpload.types'
 import ShowcaseArticle from '../component/ShowcaseArticle.vue'
 import type { ShowcaseFormState } from '../lib/formState'
 
 const { t, locale } = useI18n({ useScope: 'global' })
 const props = defineProps<{ form: ShowcaseFormState }>()
 const form = props.form
-const autoUploadCompleted = ref(false)
+const demoUploadUrls = new Set<string>()
 
 const currencyLocale = computed(() => (locale.value === 'th' ? 'th-TH' : 'en-US'))
 const environments = computed(() => [
@@ -51,27 +50,64 @@ const checkboxVariants = computed(() => [
   { value: 'group', label: t('features.dev.input.permissions') },
 ])
 const fileVariants = computed(() => [
-  { value: 'basic', label: t('features.dev.input.basicUpload') },
-  { value: 'advanced', label: t('features.dev.input.advancedUpload') },
+  { value: 'default', label: t('features.dev.input.defaultFileSelection') },
+  { value: 'upload', label: t('features.dev.input.uploadVariant') },
 ])
 const imageVariants = computed(() => [
   { value: 'single', label: t('features.dev.variants.singleImage') },
   { value: 'multiple', label: t('features.dev.variants.multipleImages') },
 ])
 const textSizes = ['small', 'medium', 'large'] as const
+const textSizeFields = {
+  small: 'textSmall',
+  medium: 'textMedium',
+  large: 'textLarge',
+} as const
 
-function completeAutoUpload() {
-  autoUploadCompleted.value = true
+const simulateUpload: AppFileUploadHandler = async (file, { signal, onProgress }) => {
+  for (const progress of [12, 38, 67, 100]) {
+    await new Promise((resolve) => window.setTimeout(resolve, 220))
+    if (signal.aborted) throw new DOMException('Upload canceled.', 'AbortError')
+    onProgress(progress)
+  }
+
+  const url = URL.createObjectURL(file)
+  demoUploadUrls.add(url)
+  return url
 }
+
+watch(
+  () => form.uploadedFiles,
+  (value) => {
+    const activeUrls = new Set(
+      (Array.isArray(value) ? value : typeof value === 'string' ? [value] : []).filter(
+        (entry): entry is string => typeof entry === 'string',
+      ),
+    )
+
+    for (const url of demoUploadUrls) {
+      if (activeUrls.has(url)) continue
+      URL.revokeObjectURL(url)
+      demoUploadUrls.delete(url)
+    }
+  },
+)
+
+onUnmounted(() => {
+  for (const url of demoUploadUrls) URL.revokeObjectURL(url)
+  demoUploadUrls.clear()
+})
 </script>
 
 <template>
-  <section id="input" class="space-y-8" aria-labelledby="input-title">
+  <section id="text-inputs" class="space-y-8" aria-labelledby="text-inputs-title">
     <header class="space-y-1">
-      <h2 id="input-title" class="app-text-lg app-text-normal font-semibold">
-        {{ t('features.dev.input.title') }}
+      <h2 id="text-inputs-title" class="app-text-lg app-text-normal font-semibold">
+        {{ t('features.dev.input.textInputs') }}
       </h2>
-      <p class="app-text-sm app-text-muted">{{ t('features.dev.input.description') }}</p>
+      <p class="app-text-sm app-text-muted">
+        {{ t('features.dev.input.textInputsDescription') }}
+      </p>
     </header>
 
     <div class="space-y-8">
@@ -159,6 +195,7 @@ function completeAutoUpload() {
             </label>
             <AppInputText
               :id="`text-size-${size}`"
+              v-model="form.additionalInputs[textSizeFields[size]]"
               :size="size"
               :placeholder="t('features.dev.input.textPlaceholder')"
               fluid
@@ -188,7 +225,7 @@ function completeAutoUpload() {
             </label>
             <AppPassword
               id="showcase-password-feedback"
-              :model-value="'Example!Password9'"
+              v-model="form.additionalInputs.passwordFeedback"
               toggle-mask
               fluid
             />
@@ -213,7 +250,7 @@ function completeAutoUpload() {
             </label>
             <AppPassword
               id="showcase-password-invalid"
-              :model-value="'weak'"
+              v-model="form.additionalInputs.passwordInvalid"
               invalid
               toggle-mask
               fluid
@@ -248,7 +285,7 @@ function completeAutoUpload() {
             >
             <AppTextarea
               id="showcase-description-invalid"
-              model-value=""
+              v-model="form.additionalInputs.descriptionInvalid"
               :placeholder="t('features.dev.input.textareaPlaceholder')"
               invalid
               :rows="3"
@@ -278,7 +315,7 @@ function completeAutoUpload() {
             </label>
             <AppTextarea
               id="showcase-description-auto"
-              :model-value="t('features.dev.input.autoResizeSample')"
+              v-model="form.additionalInputs.descriptionAutoResize"
               auto-resize
               :rows="2"
               fluid
@@ -344,19 +381,35 @@ function completeAutoUpload() {
             <label for="number-size-small" class="app-text-sm app-text-normal font-medium">
               {{ t('features.dev.variants.small') }}
             </label>
-            <AppInputNumber input-id="number-size-small" :model-value="24" size="small" fluid />
+            <AppInputNumber
+              v-model="form.additionalInputs.numberSmall"
+              input-id="number-size-small"
+              size="small"
+              fluid
+            />
           </div>
           <div class="space-y-2">
             <label for="number-size-large" class="app-text-sm app-text-normal font-medium">
               {{ t('features.dev.variants.large') }}
             </label>
-            <AppInputNumber input-id="number-size-large" :model-value="24" size="large" fluid />
+            <AppInputNumber
+              v-model="form.additionalInputs.numberLarge"
+              input-id="number-size-large"
+              size="large"
+              fluid
+            />
           </div>
           <div class="space-y-2">
             <label for="number-invalid" class="app-text-sm app-text-normal font-medium">
               {{ t('features.dev.input.invalid') }}
             </label>
-            <AppInputNumber input-id="number-invalid" :model-value="-1" :min="0" invalid fluid />
+            <AppInputNumber
+              v-model="form.additionalInputs.numberInvalid"
+              input-id="number-invalid"
+              :min="0"
+              invalid
+              fluid
+            />
           </div>
           <div class="space-y-2">
             <label for="number-disabled" class="app-text-sm app-text-normal font-medium">
@@ -372,103 +425,182 @@ function completeAutoUpload() {
           </div>
         </div>
       </ShowcaseArticle>
+    </div>
+  </section>
 
+  <section id="dropdowns" class="space-y-8" aria-labelledby="dropdowns-title">
+    <header class="space-y-1">
+      <h2 id="dropdowns-title" class="app-text-lg app-text-normal font-semibold">
+        {{ t('features.dev.input.dropdownsTitle') }}
+      </h2>
+      <p class="app-text-sm app-text-muted">
+        {{ t('features.dev.input.dropdownsDescription') }}
+      </p>
+    </header>
+
+    <div class="space-y-8">
       <ShowcaseArticle
         id="input-dropdown"
         :title="t('features.dev.input.select')"
         :variants="dropdownVariants"
       >
         <template #single>
-          <label for="showcase-environment" class="app-text-sm app-text-normal font-medium">{{
-            t('features.dev.input.singleSelect')
-          }}</label>
-          <AppSelect
-            v-model="form.environment"
-            input-id="showcase-environment"
-            :options="environments"
-            option-label="label"
-            option-value="value"
-            :placeholder="t('features.dev.input.selectPlaceholder')"
-            filter
-            show-clear
-            size="small"
-            fluid
-          />
-          <AppSelect
-            :model-value="'staging'"
-            :options="environments"
-            option-label="label"
-            option-value="value"
-            disabled
-            fluid
-          />
-          <AppSelect
-            :model-value="null"
-            :options="environments"
-            option-label="label"
-            option-value="value"
-            :placeholder="t('features.dev.input.invalid')"
-            invalid
-            fluid
-          />
-          <AppSelect
-            :model-value="'production'"
-            :options="environments"
-            option-label="label"
-            option-value="value"
-            :placeholder="t('features.dev.variants.large')"
-            size="large"
-            fluid
-          />
+          <div class="grid items-start gap-x-6 gap-y-5 sm:grid-cols-2">
+            <div class="min-w-0 space-y-2">
+              <label for="showcase-environment" class="app-text-sm app-text-normal font-medium">
+                {{ t('features.dev.input.singleSelect') }}
+              </label>
+              <AppSelect
+                v-model="form.environment"
+                input-id="showcase-environment"
+                :options="environments"
+                option-label="label"
+                option-value="value"
+                :placeholder="t('features.dev.input.selectPlaceholder')"
+                filter
+                show-clear
+                size="small"
+                fluid
+              />
+            </div>
+            <div class="min-w-0 space-y-2">
+              <label
+                for="showcase-environment-disabled"
+                class="app-text-sm app-text-normal font-medium"
+              >
+                {{ t('features.dev.input.disabled') }}
+              </label>
+              <AppSelect
+                input-id="showcase-environment-disabled"
+                :model-value="'staging'"
+                :options="environments"
+                option-label="label"
+                option-value="value"
+                disabled
+                fluid
+              />
+            </div>
+            <div class="min-w-0 space-y-2">
+              <label
+                for="showcase-environment-invalid"
+                class="app-text-sm app-text-normal font-medium"
+              >
+                {{ t('features.dev.input.invalid') }}
+              </label>
+              <AppSelect
+                v-model="form.additionalInputs.environmentInvalid"
+                input-id="showcase-environment-invalid"
+                :options="environments"
+                option-label="label"
+                option-value="value"
+                :placeholder="t('features.dev.input.invalid')"
+                invalid
+                fluid
+              />
+            </div>
+            <div class="min-w-0 space-y-2">
+              <label
+                for="showcase-environment-large"
+                class="app-text-sm app-text-normal font-medium"
+              >
+                {{ t('features.dev.variants.large') }}
+              </label>
+              <AppSelect
+                v-model="form.additionalInputs.environmentLarge"
+                input-id="showcase-environment-large"
+                :options="environments"
+                option-label="label"
+                option-value="value"
+                :placeholder="t('features.dev.variants.large')"
+                size="large"
+                fluid
+              />
+            </div>
+          </div>
         </template>
         <template #multiple>
-          <label for="showcase-teams" class="app-text-sm app-text-normal font-medium">{{
-            t('features.dev.input.multipleSelect')
-          }}</label>
-          <AppMultiSelect
-            v-model="form.teams"
-            input-id="showcase-teams"
-            :options="teams"
-            option-label="label"
-            option-value="value"
-            :placeholder="t('features.dev.input.multiplePlaceholder')"
-            display="chip"
-            filter
-            :max-selected-labels="1"
-            size="small"
-            fluid
-          />
-          <AppMultiSelect
-            :model-value="['platform', 'design']"
-            :options="teams"
-            option-label="label"
-            option-value="value"
-            display="comma"
-            :placeholder="t('features.dev.input.multiplePlaceholder')"
-            size="large"
-            fluid
-          />
-          <AppMultiSelect
-            :model-value="[]"
-            :options="teams"
-            option-label="label"
-            option-value="value"
-            :placeholder="t('features.dev.input.disabled')"
-            disabled
-            fluid
-          />
-          <AppMultiSelect
-            :model-value="[]"
-            :options="teams"
-            option-label="label"
-            option-value="value"
-            :placeholder="t('features.dev.input.invalid')"
-            invalid
-            fluid
-          />
+          <div class="grid items-start gap-x-6 gap-y-5 sm:grid-cols-2">
+            <div class="min-w-0 space-y-2">
+              <label for="showcase-teams" class="app-text-sm app-text-normal font-medium">
+                {{ t('features.dev.input.multipleSelect') }}
+              </label>
+              <AppMultiSelect
+                v-model="form.teams"
+                input-id="showcase-teams"
+                :options="teams"
+                option-label="label"
+                option-value="value"
+                :placeholder="t('features.dev.input.multiplePlaceholder')"
+                display="chip"
+                filter
+                :max-selected-labels="1"
+                size="small"
+                fluid
+              />
+            </div>
+            <div class="min-w-0 space-y-2">
+              <label for="showcase-teams-alternate" class="app-text-sm app-text-normal font-medium">
+                {{ t('features.dev.variants.large') }}
+              </label>
+              <AppMultiSelect
+                v-model="form.additionalInputs.teamsAlternate"
+                input-id="showcase-teams-alternate"
+                :options="teams"
+                option-label="label"
+                option-value="value"
+                display="comma"
+                :placeholder="t('features.dev.input.multiplePlaceholder')"
+                size="large"
+                fluid
+              />
+            </div>
+            <div class="min-w-0 space-y-2">
+              <label for="showcase-teams-disabled" class="app-text-sm app-text-normal font-medium">
+                {{ t('features.dev.input.disabled') }}
+              </label>
+              <AppMultiSelect
+                input-id="showcase-teams-disabled"
+                :model-value="[]"
+                :options="teams"
+                option-label="label"
+                option-value="value"
+                :placeholder="t('features.dev.input.disabled')"
+                disabled
+                fluid
+              />
+            </div>
+            <div class="min-w-0 space-y-2">
+              <label for="showcase-teams-invalid" class="app-text-sm app-text-normal font-medium">
+                {{ t('features.dev.input.invalid') }}
+              </label>
+              <AppMultiSelect
+                v-model="form.additionalInputs.teamsInvalid"
+                input-id="showcase-teams-invalid"
+                :options="teams"
+                option-label="label"
+                option-value="value"
+                :placeholder="t('features.dev.input.invalid')"
+                invalid
+                fluid
+              />
+            </div>
+          </div>
         </template>
       </ShowcaseArticle>
+    </div>
+  </section>
 
+  <section id="checkboxes" class="space-y-8" aria-labelledby="checkboxes-title">
+    <header class="space-y-1">
+      <h2 id="checkboxes-title" class="app-text-lg app-text-normal font-semibold">
+        {{ t('features.dev.input.checkboxesTitle') }}
+      </h2>
+      <p class="app-text-sm app-text-muted">
+        {{ t('features.dev.input.checkboxesDescription') }}
+      </p>
+    </header>
+
+    <div class="space-y-8">
       <ShowcaseArticle
         id="input-checkbox"
         :title="t('features.dev.input.checkbox')"
@@ -510,138 +642,83 @@ function completeAutoUpload() {
         </template>
       </ShowcaseArticle>
 
-      <ShowcaseArticle id="input-control-states" :title="t('features.dev.input.controlStates')">
-        <div class="space-y-6">
-          <fieldset class="grid gap-4 border-0 p-0 sm:grid-cols-2 xl:grid-cols-3">
-            <legend class="mb-3 app-text-sm app-text-normal font-medium">
-              {{ t('features.dev.input.checkbox') }}
-            </legend>
-            <div class="flex items-center gap-2">
-              <AppCheckbox input-id="checkbox-small" :model-value="true" binary size="small" />
-              <label for="checkbox-small" class="app-text-sm app-text-normal">
-                {{ t('features.dev.variants.small') }}
-              </label>
-            </div>
-            <div class="flex items-center gap-2">
-              <AppCheckbox input-id="checkbox-large" :model-value="true" binary size="large" />
-              <label for="checkbox-large" class="app-text-sm app-text-normal">
-                {{ t('features.dev.variants.large') }}
-              </label>
-            </div>
-            <div class="flex items-center gap-2">
-              <AppCheckbox input-id="checkbox-invalid" :model-value="false" binary invalid />
-              <label for="checkbox-invalid" class="app-text-sm app-text-normal">
-                {{ t('features.dev.input.invalid') }}
-              </label>
-            </div>
-            <div class="flex items-center gap-2">
-              <AppCheckbox input-id="checkbox-disabled" :model-value="true" binary disabled />
-              <label for="checkbox-disabled" class="app-text-sm app-text-muted">
-                {{ t('features.dev.input.disabled') }}
-              </label>
-            </div>
-            <div class="flex items-center gap-2">
-              <AppCheckbox input-id="checkbox-readonly" :model-value="true" binary readonly />
-              <label for="checkbox-readonly" class="app-text-sm app-text-normal">
-                {{ t('features.dev.input.readonly') }}
-              </label>
-            </div>
-            <div class="flex items-center gap-2">
-              <AppCheckbox
-                input-id="checkbox-indeterminate"
-                :model-value="false"
-                binary
-                indeterminate
-              />
-              <label for="checkbox-indeterminate" class="app-text-sm app-text-normal">
-                {{ t('features.dev.input.indeterminate') }}
-              </label>
-            </div>
-          </fieldset>
-
-          <fieldset class="grid gap-4 border-0 p-0 sm:grid-cols-2 xl:grid-cols-3">
-            <legend class="mb-3 app-text-sm app-text-normal font-medium">
-              {{ t('features.dev.input.radio') }}
-            </legend>
-            <div class="flex items-center gap-2">
-              <AppRadioButton input-id="radio-small" name="radio-size" value="small" size="small" />
-              <label for="radio-small" class="app-text-sm app-text-normal">
-                {{ t('features.dev.variants.small') }}
-              </label>
-            </div>
-            <div class="flex items-center gap-2">
-              <AppRadioButton input-id="radio-large" name="radio-size" value="large" size="large" />
-              <label for="radio-large" class="app-text-sm app-text-normal">
-                {{ t('features.dev.variants.large') }}
-              </label>
-            </div>
-            <div class="flex items-center gap-2">
-              <AppRadioButton
-                input-id="radio-invalid"
-                name="radio-invalid"
-                value="invalid"
-                invalid
-              />
-              <label for="radio-invalid" class="app-text-sm app-text-normal">
-                {{ t('features.dev.input.invalid') }}
-              </label>
-            </div>
-            <div class="flex items-center gap-2">
-              <AppRadioButton
-                input-id="radio-disabled"
-                name="radio-disabled"
-                value="disabled"
-                disabled
-              />
-              <label for="radio-disabled" class="app-text-sm app-text-muted">
-                {{ t('features.dev.input.disabled') }}
-              </label>
-            </div>
-          </fieldset>
-
-          <fieldset class="grid gap-4 border-0 p-0 sm:grid-cols-2 xl:grid-cols-3">
-            <legend class="mb-3 app-text-sm app-text-normal font-medium">
-              {{ t('features.dev.input.switch') }}
-            </legend>
-            <div class="flex items-center gap-2">
-              <AppToggleSwitch input-id="switch-readonly" :model-value="true" readonly />
-              <label for="switch-readonly" class="app-text-sm app-text-normal">
-                {{ t('features.dev.input.readonly') }}
-              </label>
-            </div>
-            <div class="flex items-center gap-2">
-              <AppToggleSwitch input-id="switch-invalid" :model-value="false" invalid />
-              <label for="switch-invalid" class="app-text-sm app-text-normal">
-                {{ t('features.dev.input.invalid') }}
-              </label>
-            </div>
-          </fieldset>
-        </div>
+      <ShowcaseArticle id="input-checkbox-states" :title="t('features.dev.input.checkboxStates')">
+        <fieldset class="grid gap-4 border-0 p-0 sm:grid-cols-2 xl:grid-cols-3">
+          <legend class="mb-3 app-text-sm app-text-normal font-medium">
+            {{ t('features.dev.input.checkbox') }}
+          </legend>
+          <div class="flex items-center gap-2">
+            <AppCheckbox
+              v-model="form.additionalInputs.checkboxSmall"
+              input-id="checkbox-small"
+              binary
+              size="small"
+            />
+            <label for="checkbox-small" class="app-text-sm app-text-normal">
+              {{ t('features.dev.variants.small') }}
+            </label>
+          </div>
+          <div class="flex items-center gap-2">
+            <AppCheckbox
+              v-model="form.additionalInputs.checkboxLarge"
+              input-id="checkbox-large"
+              binary
+              size="large"
+            />
+            <label for="checkbox-large" class="app-text-sm app-text-normal">
+              {{ t('features.dev.variants.large') }}
+            </label>
+          </div>
+          <div class="flex items-center gap-2">
+            <AppCheckbox
+              v-model="form.additionalInputs.checkboxInvalid"
+              input-id="checkbox-invalid"
+              binary
+              invalid
+            />
+            <label for="checkbox-invalid" class="app-text-sm app-text-normal">
+              {{ t('features.dev.input.invalid') }}
+            </label>
+          </div>
+          <div class="flex items-center gap-2">
+            <AppCheckbox input-id="checkbox-disabled" :model-value="true" binary disabled />
+            <label for="checkbox-disabled" class="app-text-sm app-text-muted">
+              {{ t('features.dev.input.disabled') }}
+            </label>
+          </div>
+          <div class="flex items-center gap-2">
+            <AppCheckbox input-id="checkbox-readonly" :model-value="true" binary readonly />
+            <label for="checkbox-readonly" class="app-text-sm app-text-normal">
+              {{ t('features.dev.input.readonly') }}
+            </label>
+          </div>
+          <div class="flex items-center gap-2">
+            <AppCheckbox
+              v-model="form.additionalInputs.checkboxIndeterminate"
+              input-id="checkbox-indeterminate"
+              binary
+              indeterminate
+            />
+            <label for="checkbox-indeterminate" class="app-text-sm app-text-normal">
+              {{ t('features.dev.input.indeterminate') }}
+            </label>
+          </div>
+        </fieldset>
       </ShowcaseArticle>
+    </div>
+  </section>
 
-      <ShowcaseArticle id="input-switch" :title="t('features.dev.input.switch')">
-        <div class="flex flex-wrap gap-8">
-          <div class="flex items-center gap-3">
-            <AppToggleSwitch v-model="form.maintenanceMode" input-id="showcase-maintenance" />
-            <label for="showcase-maintenance" class="app-text-sm app-text-normal">{{
-              t('features.dev.input.maintenanceMode')
-            }}</label>
-          </div>
-          <div class="flex items-center gap-3">
-            <AppToggleSwitch :model-value="true" input-id="showcase-switch-on" />
-            <label for="showcase-switch-on" class="app-text-sm app-text-normal">{{
-              t('features.dev.variants.on')
-            }}</label>
-          </div>
-          <div class="flex items-center gap-3">
-            <AppToggleSwitch input-id="showcase-switch-disabled" disabled />
-            <label for="showcase-switch-disabled" class="app-text-sm app-text-muted">{{
-              t('features.dev.input.disabled')
-            }}</label>
-          </div>
-        </div>
-      </ShowcaseArticle>
+  <section id="radio-buttons" class="space-y-8" aria-labelledby="radio-buttons-title">
+    <header class="space-y-1">
+      <h2 id="radio-buttons-title" class="app-text-lg app-text-normal font-semibold">
+        {{ t('features.dev.input.radioButtonsTitle') }}
+      </h2>
+      <p class="app-text-sm app-text-muted">
+        {{ t('features.dev.input.radioButtonsDescription') }}
+      </p>
+    </header>
 
+    <div class="space-y-8">
       <ShowcaseArticle id="input-radio" :title="t('features.dev.input.radio')">
         <div class="grid gap-6 md:grid-cols-2">
           <fieldset class="space-y-3 border-0 p-0">
@@ -683,73 +760,159 @@ function completeAutoUpload() {
         </div>
       </ShowcaseArticle>
 
+      <ShowcaseArticle id="input-radio-states" :title="t('features.dev.input.radioStates')">
+        <fieldset class="grid gap-4 border-0 p-0 sm:grid-cols-2 xl:grid-cols-3">
+          <legend class="mb-3 app-text-sm app-text-normal font-medium">
+            {{ t('features.dev.input.radio') }}
+          </legend>
+          <div class="flex items-center gap-2">
+            <AppRadioButton
+              v-model="form.additionalInputs.radioSize"
+              input-id="radio-small"
+              name="radio-size"
+              value="small"
+              size="small"
+            />
+            <label for="radio-small" class="app-text-sm app-text-normal">
+              {{ t('features.dev.variants.small') }}
+            </label>
+          </div>
+          <div class="flex items-center gap-2">
+            <AppRadioButton
+              v-model="form.additionalInputs.radioSize"
+              input-id="radio-large"
+              name="radio-size"
+              value="large"
+              size="large"
+            />
+            <label for="radio-large" class="app-text-sm app-text-normal">
+              {{ t('features.dev.variants.large') }}
+            </label>
+          </div>
+          <div class="flex items-center gap-2">
+            <AppRadioButton
+              v-model="form.additionalInputs.radioInvalid"
+              input-id="radio-invalid"
+              name="radio-invalid"
+              value="invalid"
+              invalid
+            />
+            <label for="radio-invalid" class="app-text-sm app-text-normal">
+              {{ t('features.dev.input.invalid') }}
+            </label>
+          </div>
+          <div class="flex items-center gap-2">
+            <AppRadioButton
+              input-id="radio-disabled"
+              name="radio-disabled"
+              value="disabled"
+              disabled
+            />
+            <label for="radio-disabled" class="app-text-sm app-text-muted">
+              {{ t('features.dev.input.disabled') }}
+            </label>
+          </div>
+        </fieldset>
+      </ShowcaseArticle>
+    </div>
+  </section>
+
+  <section id="switches" class="space-y-8" aria-labelledby="switches-title">
+    <header class="space-y-1">
+      <h2 id="switches-title" class="app-text-lg app-text-normal font-semibold">
+        {{ t('features.dev.input.switchesTitle') }}
+      </h2>
+      <p class="app-text-sm app-text-muted">
+        {{ t('features.dev.input.switchesDescription') }}
+      </p>
+    </header>
+
+    <div class="space-y-8">
+      <ShowcaseArticle id="input-switch" :title="t('features.dev.input.switch')">
+        <div class="flex flex-wrap gap-8">
+          <div class="flex items-center gap-3">
+            <AppToggleSwitch v-model="form.maintenanceMode" input-id="showcase-maintenance" />
+            <label for="showcase-maintenance" class="app-text-sm app-text-normal">{{
+              t('features.dev.input.maintenanceMode')
+            }}</label>
+          </div>
+          <div class="flex items-center gap-3">
+            <AppToggleSwitch
+              v-model="form.additionalInputs.switchOn"
+              input-id="showcase-switch-on"
+            />
+            <label for="showcase-switch-on" class="app-text-sm app-text-normal">{{
+              t('features.dev.variants.on')
+            }}</label>
+          </div>
+          <div class="flex items-center gap-3">
+            <AppToggleSwitch input-id="showcase-switch-disabled" disabled />
+            <label for="showcase-switch-disabled" class="app-text-sm app-text-muted">{{
+              t('features.dev.input.disabled')
+            }}</label>
+          </div>
+        </div>
+      </ShowcaseArticle>
+
+      <ShowcaseArticle id="input-switch-states" :title="t('features.dev.input.switchStates')">
+        <fieldset class="grid gap-4 border-0 p-0 sm:grid-cols-2 xl:grid-cols-3">
+          <legend class="mb-3 app-text-sm app-text-normal font-medium">
+            {{ t('features.dev.input.switch') }}
+          </legend>
+          <div class="flex items-center gap-2">
+            <AppToggleSwitch input-id="switch-readonly" :model-value="true" readonly />
+            <label for="switch-readonly" class="app-text-sm app-text-normal">
+              {{ t('features.dev.input.readonly') }}
+            </label>
+          </div>
+          <div class="flex items-center gap-2">
+            <AppToggleSwitch
+              v-model="form.additionalInputs.switchInvalid"
+              input-id="switch-invalid"
+              invalid
+            />
+            <label for="switch-invalid" class="app-text-sm app-text-normal">
+              {{ t('features.dev.input.invalid') }}
+            </label>
+          </div>
+        </fieldset>
+      </ShowcaseArticle>
+    </div>
+  </section>
+
+  <section id="file-upload" class="space-y-8" aria-labelledby="file-upload-title">
+    <header class="space-y-1">
+      <h2 id="file-upload-title" class="app-text-lg app-text-normal font-semibold">
+        {{ t('features.dev.input.fileImageTitle') }}
+      </h2>
+      <p class="app-text-sm app-text-muted">
+        {{ t('features.dev.input.fileImageDescription') }}
+      </p>
+    </header>
+
+    <div class="space-y-8">
       <ShowcaseArticle
         id="input-file"
         :title="t('features.dev.input.file')"
         :variants="fileVariants"
       >
-        <template #basic>
-          <AppFileUpload
-            mode="basic"
-            name="showcase-basic-file"
-            accept="*/*"
-            :max-file-size="5000000"
-            :file-limit="1"
-            :choose-label="t('features.dev.input.chooseFiles')"
-          />
+        <template #default>
+          <p class="m-0 mb-3 app-text-sm app-text-muted">
+            {{ t('features.dev.input.defaultFileSelectionHelp') }}
+          </p>
+          <AppFileUpload v-model="form.selectedFiles" :multiple="true" accept="*/*" />
         </template>
-        <template #advanced>
-          <div class="space-y-5">
-            <AppFileUpload
-              mode="advanced"
-              name="showcase-files"
-              :multiple="true"
-              accept="*/*"
-              :max-file-size="5000000"
-              :file-limit="5"
-              custom-upload
-              :show-upload-button="true"
-              :show-cancel-button="true"
-              :choose-label="t('features.dev.input.chooseFiles')"
-              @uploader="completeAutoUpload"
-            >
-              <template #header="{ chooseCallback, clearCallback, files }">
-                <div class="flex flex-wrap items-center gap-2">
-                  <AppButton
-                    type="button"
-                    icon="pi pi-paperclip"
-                    :label="t('features.dev.input.chooseFiles')"
-                    @click="chooseCallback()"
-                  />
-                  <AppButton
-                    type="button"
-                    tone="secondary"
-                    appearance="outlined"
-                    :label="t('features.dev.input.clearFiles')"
-                    :disabled="files.length === 0"
-                    @click="clearCallback()"
-                  />
-                </div>
-              </template>
-            </AppFileUpload>
-            <AppFileUpload
-              mode="basic"
-              name="showcase-disabled-file"
-              :choose-label="t('features.dev.input.uploadDisabled')"
-              disabled
-            />
-            <AppFileUpload
-              mode="basic"
-              name="showcase-auto-file"
-              :choose-label="t('features.dev.input.automaticUpload')"
-              auto
-              custom-upload
-              @uploader="completeAutoUpload"
-            />
-            <p v-if="autoUploadCompleted" role="status" class="app-text-sm app-text-muted">
-              {{ t('features.dev.input.uploadComplete') }}
-            </p>
-          </div>
+        <template #upload>
+          <p class="m-0 mb-3 app-text-sm app-text-muted">
+            {{ t('features.dev.input.uploadDemoNote') }}
+          </p>
+          <AppFileUpload
+            v-model="form.uploadedFiles"
+            variant="upload"
+            :multiple="true"
+            accept="*/*"
+            :upload="simulateUpload"
+          />
         </template>
       </ShowcaseArticle>
 
@@ -758,10 +921,12 @@ function completeAutoUpload() {
         :title="t('features.dev.input.image')"
         :variants="imageVariants"
       >
-        <template #single><ImageUploadVariant :multiple="false" name="showcase-image" /></template>
-        <template #multiple
-          ><ImageUploadVariant :multiple="true" name="showcase-images"
-        /></template>
+        <template #single>
+          <AppFileUpload v-model="form.selectedImage" accept="image/*" />
+        </template>
+        <template #multiple>
+          <AppFileUpload v-model="form.selectedImages" :multiple="true" accept="image/*" />
+        </template>
       </ShowcaseArticle>
     </div>
   </section>
