@@ -150,8 +150,9 @@ export const th = {
     fileSelected: 'ไฟล์ที่เลือก',
     filesSelected: 'ไฟล์ที่เลือก',
     noFiles: 'ยังไม่ได้เลือกไฟล์',
-    submitted: 'ค่าปัจจุบันของฟอร์ม',
+    reactiveState: 'สถานะแบบเรียลไทม์',
     jsonPreview: 'สถานะฟอร์ม JSON แบบเรียลไทม์',
+    resetSection: 'รีเซ็ตส่วนนี้',
   },
   button: {
     title: 'ตัวอย่างปุ่ม',
@@ -229,6 +230,12 @@ export const th = {
     liveBadge: 'สด',
     systemStatus: 'สถานะระบบ',
     allSystemsNormal: 'ระบบทั้งหมดทำงานปกติ',
+    skeleton: 'โครงร่างขณะโหลดและการแทนที่',
+    showSkeleton: 'แสดงโครงร่าง',
+    loadCard: 'โหลดการ์ด',
+    loadingCard: 'กำลังโหลดการ์ด',
+    loadedDescription: 'โหลดการ์ดเสร็จแล้ว',
+    loadedContent: 'โครงร่างจะเปลี่ยนเป็นการ์ดจริงเมื่อเนื้อหาพร้อม',
   },
   dialog: {
     title: 'ตัวอย่างไดอะล็อก',

@@ -47,6 +47,8 @@ export interface ShowcaseFormState {
   projectName: string
   dataTableSearch: string
   dataTableTeam: string
+  dataTableSingleSelection: unknown | null
+  dataTableMultipleSelection: unknown[]
 }
 
 export function createShowcaseFormState(): ShowcaseFormState {
@@ -95,5 +97,7 @@ export function createShowcaseFormState(): ShowcaseFormState {
     projectName: '',
     dataTableSearch: '',
     dataTableTeam: '',
+    dataTableSingleSelection: null,
+    dataTableMultipleSelection: [],
   }
 }

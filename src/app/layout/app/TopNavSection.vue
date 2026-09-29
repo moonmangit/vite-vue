@@ -43,10 +43,13 @@ const emit = defineEmits<{
           @click="emit('toggleSidebar')"
         />
 
-        <RouterLink to="/" class="flex items-center gap-2.5 no-underline">
-          <Icon :icon="logoVue" class="size-8 shrink-0 app-text-normal" aria-hidden="true" />
+        <RouterLink
+          to="/"
+          class="flex items-center gap-2.5 text-surface-700 no-underline app-dark:text-surface-0"
+        >
+          <Icon :icon="logoVue" class="size-8 shrink-0" aria-hidden="true" />
           <span class="flex flex-col leading-tight">
-            <span class="app-text-sm app-text-normal font-black tracking-tight">Vue admin</span>
+            <span class="app-text-sm font-semibold tracking-tight">Vue admin</span>
             <span class="app-text-xs app-text-muted">complex administration.</span>
           </span>
         </RouterLink>

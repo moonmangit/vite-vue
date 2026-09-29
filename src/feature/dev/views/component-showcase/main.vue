@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import hljs from 'highlight.js/lib/core'
 import json from 'highlight.js/lib/languages/json'
 import AppCard from '../../../../shared/component/AppCard.vue'
+import AppButton from '../../../../shared/component/AppButton.vue'
 import InputSection from './section/InputSection.vue'
 import ButtonSection from './section/ButtonSection.vue'
 import BadgeSection from './section/BadgeSection.vue'
@@ -16,7 +17,11 @@ import MessageSection from './section/MessageSection.vue'
 import ProgressSection from './section/ProgressSection.vue'
 import DataTableSection from './section/DataTableSection.vue'
 import ShowcaseNavigationItem from './component/ShowcaseNavigationItem.vue'
-import { createShowcaseFormState } from './lib/formState'
+import {
+  createShowcaseFormState,
+  type ShowcaseAdditionalInputState,
+  type ShowcaseFormState,
+} from './lib/formState'
 import { useHashSectionNavigation } from './composable/useHashSectionNavigation'
 
 hljs.registerLanguage('json', json)
@@ -26,9 +31,93 @@ const activeArticle = ref('input-text')
 const expandedItems = ref(['input', 'text-inputs'])
 const isMobileNavigationOpen = ref(false)
 const form = reactive(createShowcaseFormState())
+const initialFormState = createShowcaseFormState()
+type FormStateSelection = {
+  fields?: (keyof ShowcaseFormState)[]
+  additionalInputs?: (keyof ShowcaseAdditionalInputState)[]
+}
+
+const formStateBySection: Record<string, FormStateSelection> = {
+  'input-text': { fields: ['name', 'email', 'search'] },
+  'input-text-sizes': { additionalInputs: ['textSmall', 'textMedium', 'textLarge'] },
+  'input-password': {
+    fields: ['password'],
+    additionalInputs: ['passwordFeedback', 'passwordInvalid'],
+  },
+  'input-textarea': {
+    fields: ['description'],
+    additionalInputs: ['descriptionInvalid', 'descriptionAutoResize'],
+  },
+  'input-number': { fields: ['quantity', 'amount'] },
+  'input-number-states': { additionalInputs: ['numberSmall', 'numberLarge', 'numberInvalid'] },
+  'input-dropdown': {
+    fields: ['environment', 'teams'],
+    additionalInputs: ['environmentInvalid', 'environmentLarge', 'teamsAlternate', 'teamsInvalid'],
+  },
+  'input-checkbox': { fields: ['notifications', 'permissions'] },
+  'input-checkbox-states': {
+    additionalInputs: [
+      'checkboxSmall',
+      'checkboxLarge',
+      'checkboxInvalid',
+      'checkboxIndeterminate',
+    ],
+  },
+  'input-radio': { fields: ['plan'] },
+  'input-radio-states': { additionalInputs: ['radioSize', 'radioInvalid'] },
+  'input-switch': { fields: ['maintenanceMode'], additionalInputs: ['switchOn'] },
+  'input-switch-states': { additionalInputs: ['switchInvalid'] },
+  'input-file': { fields: ['selectedFiles', 'uploadedFiles'] },
+  'input-image': { fields: ['selectedImage', 'selectedImages'] },
+  'dialog-form': { fields: ['projectName'] },
+  'data-table-formats': { fields: ['dataTableSearch', 'dataTableTeam'] },
+  'data-table-selection': { fields: ['dataTableSingleSelection', 'dataTableMultipleSelection'] },
+}
+
+const currentSectionState = computed(() => {
+  const selection = formStateBySection[activeArticle.value]
+  if (!selection) return {}
+
+  return {
+    ...Object.fromEntries((selection.fields ?? []).map((field) => [field, form[field]])),
+    ...(selection.additionalInputs?.length
+      ? {
+          additionalInputs: Object.fromEntries(
+            selection.additionalInputs.map((field) => [field, form.additionalInputs[field]]),
+          ),
+        }
+      : {}),
+  }
+})
+const hasCurrentSectionState = computed(() => Boolean(formStateBySection[activeArticle.value]))
+
+function resetCurrentSectionState() {
+  const selection = formStateBySection[activeArticle.value]
+  if (!selection) return
+
+  Object.assign(
+    form,
+    Object.fromEntries(
+      (selection.fields ?? []).map((field) => {
+        const value = initialFormState[field]
+        return [field, Array.isArray(value) ? [...value] : value]
+      }),
+    ),
+  )
+  Object.assign(
+    form.additionalInputs,
+    Object.fromEntries(
+      (selection.additionalInputs ?? []).map((field) => {
+        const value = initialFormState.additionalInputs[field]
+        return [field, Array.isArray(value) ? [...value] : value]
+      }),
+    ),
+  )
+}
+
 const formJson = computed(() =>
   JSON.stringify(
-    form,
+    currentSectionState.value,
     (key, value: unknown) => {
       if (typeof value === 'string' && /password/i.test(key) && value) return '••••••'
       if (typeof File !== 'undefined' && value instanceof File) {
@@ -194,6 +283,7 @@ const navigation = computed<NavigationItem[]>(() => [
     children: navigationLinks([
       { id: 'card-variants', label: t('features.dev.card.variants') },
       { id: 'card-stat', label: t('features.dev.card.shared') },
+      { id: 'card-skeleton', label: t('features.dev.card.skeleton') },
     ]),
   },
   {
@@ -363,7 +453,12 @@ onUnmounted(() => articleObserver?.disconnect())
     </header>
 
     <div
-      class="grid min-w-0 gap-6 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-8 showcase:grid-cols-[15rem_minmax(0,1fr)_19rem]"
+      class="grid min-w-0 gap-6 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-8"
+      :class="
+        hasCurrentSectionState
+          ? 'showcase:grid-cols-[15rem_minmax(0,1fr)_19rem]'
+          : 'showcase:grid-cols-[15rem_minmax(0,1fr)]'
+      "
     >
       <aside class="min-w-0 lg:sticky lg:top-4 lg:self-start">
         <button
@@ -420,31 +515,60 @@ onUnmounted(() => articleObserver?.disconnect())
         <DataTableSection :form="form" />
       </article>
 
-      <aside
-        class="min-w-0 lg:col-span-2 showcase:col-span-1 showcase:sticky showcase:top-4 showcase:self-start"
-      >
-        <section aria-labelledby="showcase-form-state-title" class="space-y-3">
-          <AppCard variant="full" class="form-state-card">
-            <template #title>
-              <span id="showcase-form-state-title">{{ t('features.dev.input.submitted') }}</span>
-            </template>
-            <template #header-icon><i class="pi pi-code" aria-hidden="true" /></template>
-            <!-- Highlight.js escapes source text before producing token markup. -->
-            <!-- eslint-disable vue/no-v-html -->
-            <pre class="form-json-preview m-0 app-text-xs"><code
-              class="hljs language-json"
-              :aria-label="t('features.dev.input.jsonPreview')"
-              v-html="highlightedFormJson"
-            /></pre>
-            <!-- eslint-enable vue/no-v-html -->
-          </AppCard>
-        </section>
-      </aside>
+      <Transition name="section-state">
+        <aside
+          v-if="hasCurrentSectionState"
+          class="min-w-0 lg:col-span-2 showcase:col-span-1 showcase:sticky showcase:top-4 showcase:self-start"
+        >
+          <section aria-labelledby="showcase-form-state-title" class="space-y-3">
+            <AppCard variant="full" class="form-state-card">
+              <template #title>
+                <span id="showcase-form-state-title">{{
+                  t('features.dev.input.reactiveState')
+                }}</span>
+              </template>
+              <template #header-icon>
+                <AppButton
+                  :label="t('features.dev.input.resetSection')"
+                  :aria-label="t('features.dev.input.resetSection')"
+                  :title="t('features.dev.input.resetSection')"
+                  icon="pi pi-refresh"
+                  tone="secondary"
+                  appearance="text"
+                  size="small"
+                  @click="resetCurrentSectionState"
+                />
+              </template>
+              <!-- Highlight.js escapes source text before producing token markup. -->
+              <!-- eslint-disable vue/no-v-html -->
+              <pre class="form-json-preview m-0 app-text-xs"><code
+                class="hljs language-json"
+                :aria-label="t('features.dev.input.jsonPreview')"
+                v-html="highlightedFormJson"
+              /></pre>
+              <!-- eslint-enable vue/no-v-html -->
+            </AppCard>
+          </section>
+        </aside>
+      </Transition>
     </div>
   </section>
 </template>
 
 <style scoped>
+.section-state-enter-active,
+.section-state-leave-active {
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.section-state-enter-from,
+.section-state-leave-to {
+  opacity: 0;
+  transform: translateX(0.5rem);
+}
+
 .form-state-card :deep(.p-card-body) {
   max-height: calc(100vh - 8rem);
   overflow-x: hidden;
@@ -454,5 +578,12 @@ onUnmounted(() => articleObserver?.disconnect())
 .form-state-card pre {
   overflow-wrap: anywhere;
   white-space: pre-wrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section-state-enter-active,
+  .section-state-leave-active {
+    transition: none;
+  }
 }
 </style>

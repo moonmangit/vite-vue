@@ -78,8 +78,6 @@ const rows: Person[] = [
 
 const sortField = ref('name')
 const sortOrder = ref<1 | -1>(1)
-const singleSelection = ref<unknown | null>(null)
-const multipleSelection = ref<unknown[]>([])
 const tableState = ref<DataTableState>('ready')
 const teams = [...new Set(rows.map((person) => person.team))]
 const teamOptions = computed(() => [
@@ -236,7 +234,7 @@ function selectedName(row: unknown) {
             {{ t('features.dev.dataTable.singleSelection') }}
           </h3>
           <AppDataTable
-            v-model:selection="singleSelection"
+            v-model:selection="form.dataTableSingleSelection"
             :rows="rows"
             :headers="selectionHeaders"
             :aria-label="t('features.dev.dataTable.singleSelection')"
@@ -245,7 +243,7 @@ function selectedName(row: unknown) {
           />
           <p class="app-text-xs app-text-muted" aria-live="polite">
             {{ t('features.dev.dataTable.selected') }}:
-            {{ selectedName(singleSelection) || t('features.dev.dataTable.none') }}
+            {{ selectedName(form.dataTableSingleSelection) || t('features.dev.dataTable.none') }}
           </p>
         </div>
         <div class="min-w-0 space-y-2">
@@ -253,7 +251,7 @@ function selectedName(row: unknown) {
             {{ t('features.dev.dataTable.multipleSelection') }}
           </h3>
           <AppDataTable
-            v-model:selection="multipleSelection"
+            v-model:selection="form.dataTableMultipleSelection"
             :rows="rows"
             :headers="selectionHeaders"
             :aria-label="t('features.dev.dataTable.multipleSelection')"
@@ -262,7 +260,11 @@ function selectedName(row: unknown) {
             :select-all-label="t('features.dev.dataTable.selectAll')"
           />
           <p class="app-text-xs app-text-muted" aria-live="polite">
-            {{ t('features.dev.dataTable.selectedCount', { count: multipleSelection.length }) }}
+            {{
+              t('features.dev.dataTable.selectedCount', {
+                count: form.dataTableMultipleSelection.length,
+              })
+            }}
           </p>
         </div>
       </div>

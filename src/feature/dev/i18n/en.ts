@@ -152,8 +152,9 @@ export const en = {
     fileSelected: 'Selected file',
     filesSelected: 'Selected files',
     noFiles: 'No files selected',
-    submitted: 'Current form values',
+    reactiveState: 'Reactive state',
     jsonPreview: 'Live JSON form state',
+    resetSection: 'Reset section',
   },
   button: {
     title: 'Button examples',
@@ -231,6 +232,12 @@ export const en = {
     liveBadge: 'LIVE',
     systemStatus: 'System status',
     allSystemsNormal: 'All systems are operating normally.',
+    skeleton: 'Loading skeleton and replacement',
+    showSkeleton: 'Show skeleton',
+    loadCard: 'Load card',
+    loadingCard: 'Loading card',
+    loadedDescription: 'The card has finished loading.',
+    loadedContent: 'The skeleton transitions into the real card when its content is ready.',
   },
   dialog: {
     title: 'Dialog examples',
