@@ -73,6 +73,9 @@ function checkWrapperImports(section) {
     const isPrimeVueSetup = sourcePath.startsWith('src/app/config/primevue/')
     const isToastService = sourcePath === 'src/shared/toast/composable/useAppToast.ts'
     const isToastOutlet = sourcePath === 'src/shared/toast/component/AppToastOutlet.vue'
+    const isConfirmService = sourcePath === 'src/shared/confirm/composable/useAppConfirm.ts'
+    const isConfirmOutlet = sourcePath === 'src/shared/confirm/component/AppConfirmOutlet.vue'
+    const isConfirmTypes = sourcePath === 'src/shared/confirm/store/main.ts'
     const isChartComponent = sourcePath === 'src/shared/component/AppChart.vue'
     const isChartTypes = sourcePath === 'src/shared/component/AppChart.types.ts'
     const contents = readFileSync(join(root, sourcePath), 'utf8')
@@ -84,7 +87,11 @@ function checkWrapperImports(section) {
           (isSharedWrapper ||
             isPrimeVueSetup ||
             (isToastService && specifier === 'primevue/usetoast') ||
-            (isToastOutlet && ['primevue/usetoast', 'primevue/toast'].includes(specifier)))) ||
+            (isToastOutlet && ['primevue/usetoast', 'primevue/toast'].includes(specifier)) ||
+            (isConfirmService && specifier === 'primevue/useconfirm') ||
+            (isConfirmTypes &&
+              ['primevue/button', 'primevue/confirmationoptions'].includes(specifier)) ||
+            (isConfirmOutlet && specifier === 'primevue/confirmdialog'))) ||
         (specifier === 'vue3-apexcharts' && isChartComponent) ||
         (specifier === 'apexcharts' && (isChartComponent || isChartTypes))
 

@@ -5,6 +5,8 @@ import { en as sharedEn } from '../../../shared/i18n/en'
 import { th as sharedTh } from '../../../shared/i18n/th'
 import { en as toastEn } from '../../../shared/toast/i18n/en'
 import { th as toastTh } from '../../../shared/toast/i18n/th'
+import { en as confirmEn } from '../../../shared/confirm/i18n/en'
+import { th as confirmTh } from '../../../shared/confirm/i18n/th'
 import { en as authEn } from '../../../feature/auth/i18n/en'
 import { th as authTh } from '../../../feature/auth/i18n/th'
 import { en as dashboardEn } from '../../../feature/dashboard/i18n/en'
@@ -21,6 +23,7 @@ const enModules: LocaleMessageModule[] = [
   { source: 'app', namespace: [], messages: appEn },
   { source: 'shared', namespace: ['shared'], messages: sharedEn },
   { source: 'shared/toast', namespace: ['shared', 'toast'], messages: toastEn },
+  { source: 'shared/confirm', namespace: ['shared', 'confirm'], messages: confirmEn },
   { source: 'feature/auth', namespace: ['features', 'auth'], messages: authEn },
   { source: 'feature/dashboard', namespace: ['features', 'dashboard'], messages: dashboardEn },
   ...(import.meta.env.DEV
@@ -32,6 +35,7 @@ const thModules: LocaleMessageModule[] = [
   { source: 'app', namespace: [], messages: appTh },
   { source: 'shared', namespace: ['shared'], messages: sharedTh },
   { source: 'shared/toast', namespace: ['shared', 'toast'], messages: toastTh },
+  { source: 'shared/confirm', namespace: ['shared', 'confirm'], messages: confirmTh },
   { source: 'feature/auth', namespace: ['features', 'auth'], messages: authTh },
   { source: 'feature/dashboard', namespace: ['features', 'dashboard'], messages: dashboardTh },
   ...(import.meta.env.DEV

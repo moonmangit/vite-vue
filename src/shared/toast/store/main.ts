@@ -1,13 +1,21 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-export type ToastSeverity = 'success' | 'info' | 'warn' | 'error' | 'contrast' | 'secondary'
+export type ToastSeverity =
+  'success' | 'info' | 'warning' | 'danger' | 'warn' | 'error' | 'contrast' | 'secondary'
+
+export type ToastDisplaySeverity =
+  'success' | 'info' | 'warning' | 'danger' | 'contrast' | 'secondary'
 
 export interface ToastOptions {
   id?: string
   severity?: ToastSeverity
+  title?: string
+  message?: string
   summary?: string
+  description?: string
   detail?: string
+  duration?: number | false
   life?: number
   sticky?: boolean
   closable?: boolean
@@ -15,81 +23,76 @@ export interface ToastOptions {
   data?: unknown
 }
 
+export interface ToastItem {
+  id: string
+  severity: ToastDisplaySeverity
+  title: string
+  description?: string
+  duration: number | false
+  sticky: boolean
+  closable: boolean
+  group?: string
+  data?: unknown
+}
+
+export const MAX_VISIBLE_TOASTS = 3
+
+let nextToastId = 0
+
 export const useToastStore = defineStore('toast', () => {
-  const queue = ref<ToastOptions[]>([])
+  const toasts = ref<ToastItem[]>([])
+  const queue = ref<ToastItem[]>([])
 
-  function show(options: ToastOptions) {
-    const toastItem: ToastOptions = {
-      id: options.id || `toast-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-      severity: options.severity || 'info',
-      summary: options.summary,
-      detail: options.detail,
-      life: options.life,
-      sticky: options.sticky,
-      closable: options.closable ?? true,
-      group: options.group,
-      data: options.data,
+  function show(options: Omit<ToastItem, 'id'> & { id?: string }) {
+    const toastItem: ToastItem = {
+      ...options,
+      id: options.id || `toast-${Date.now()}-${++nextToastId}`,
     }
-    queue.value.push(toastItem)
+
+    if (toasts.value.length < MAX_VISIBLE_TOASTS) {
+      toasts.value.unshift(toastItem)
+    } else {
+      queue.value.push(toastItem)
+    }
+
+    return toastItem.id
   }
 
-  function success(summary: string, detail?: string, options?: Partial<ToastOptions>) {
-    show({
-      severity: 'success',
-      summary: summary || 'Success',
-      detail,
-      life: options?.life ?? 3000,
-      ...options,
-    })
-  }
+  function dismiss(id: string) {
+    const visibleIndex = toasts.value.findIndex((item) => item.id === id)
+    if (visibleIndex !== -1) {
+      const nextToasts = toasts.value.filter((_, index) => index !== visibleIndex)
+      const nextQueue = [...queue.value]
+      const nextToast = nextQueue.shift()
 
-  function info(summary: string, detail?: string, options?: Partial<ToastOptions>) {
-    show({
-      severity: 'info',
-      summary: summary || 'Information',
-      detail,
-      life: options?.life ?? 3500,
-      ...options,
-    })
-  }
+      if (nextToast) nextToasts.unshift(nextToast)
 
-  function warning(summary: string, detail?: string, options?: Partial<ToastOptions>) {
-    show({
-      severity: 'warn',
-      summary: summary || 'Warning',
-      detail,
-      life: options?.life ?? 4500,
-      ...options,
-    })
-  }
+      toasts.value = nextToasts
+      if (nextToast) queue.value = nextQueue
+      return
+    }
 
-  function error(summary: string, detail?: string, options?: Partial<ToastOptions>) {
-    show({
-      severity: 'error',
-      summary: summary || 'Error',
-      detail,
-      life: options?.life ?? 6000,
-      ...options,
-    })
-  }
-
-  function dequeue(): ToastOptions | undefined {
-    return queue.value.shift()
+    const queuedIndex = queue.value.findIndex((item) => item.id === id)
+    if (queuedIndex !== -1) queue.value = queue.value.filter((_, index) => index !== queuedIndex)
   }
 
   function clear() {
+    toasts.value = []
     queue.value = []
   }
 
-  return {
-    queue,
-    show,
-    success,
-    info,
-    warning,
-    warn: warning,
-    error,
-    dequeue,
-    clear,
+  function removeGroup(group: string) {
+    const nextToasts = toasts.value.filter((item) => item.group !== group)
+    const nextQueue = queue.value.filter((item) => item.group !== group)
+
+    while (nextToasts.length < MAX_VISIBLE_TOASTS && nextQueue.length > 0) {
+      const nextToast = nextQueue.shift()
+      if (nextToast) nextToasts.unshift(nextToast)
+    }
+
+    toasts.value = nextToasts
+    queue.value = nextQueue
   }
+
+  return { toasts, queue, show, dismiss, clear, removeGroup }
 })

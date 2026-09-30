@@ -1,6 +1,6 @@
 import type { App } from 'vue'
 import PrimeVue from 'primevue/config'
-import ToastService from 'primevue/toastservice'
+import ConfirmationService from 'primevue/confirmationservice'
 import 'primeicons/primeicons.css'
 import { AppPreset } from './preset'
 
@@ -15,5 +15,5 @@ export function installPrimeVue(app: App) {
       },
     },
   })
-  app.use(ToastService)
+  app.use(ConfirmationService)
 }

@@ -5,6 +5,7 @@ import hljs from 'highlight.js/lib/core'
 import json from 'highlight.js/lib/languages/json'
 import AppCard from '../../../../shared/component/AppCard.vue'
 import AppButton from '../../../../shared/component/AppButton.vue'
+import AppInputText from '../../../../shared/component/AppInputText.vue'
 import InputSection from './section/InputSection.vue'
 import ButtonSection from './section/ButtonSection.vue'
 import BadgeSection from './section/BadgeSection.vue'
@@ -16,7 +17,14 @@ import AvatarSection from './section/AvatarSection.vue'
 import MessageSection from './section/MessageSection.vue'
 import ProgressSection from './section/ProgressSection.vue'
 import DataTableSection from './section/DataTableSection.vue'
+import ToastSection from './section/ToastSection.vue'
+import ConfirmSection from './section/ConfirmSection.vue'
 import ShowcaseNavigationItem from './component/ShowcaseNavigationItem.vue'
+import {
+  matchesSearchText,
+  normalizeSearchText,
+  translatedSearchText,
+} from './lib/navigationSearch'
 import {
   createShowcaseFormState,
   type ShowcaseAdditionalInputState,
@@ -26,10 +34,11 @@ import { useHashSectionNavigation } from './composable/useHashSectionNavigation'
 
 hljs.registerLanguage('json', json)
 
-const { t } = useI18n({ useScope: 'global' })
+const { locale, t } = useI18n({ useScope: 'global' })
 const activeArticle = ref('input-text')
-const expandedItems = ref(['input', 'text-inputs'])
+const expandedItems = ref(['input', 'text-inputs', 'system'])
 const isMobileNavigationOpen = ref(false)
+const navigationSearch = ref('')
 const form = reactive(createShowcaseFormState())
 const initialFormState = createShowcaseFormState()
 type FormStateSelection = {
@@ -135,55 +144,47 @@ const highlightedFormJson = computed(
 type NavigationItem = {
   id: string
   label: string
+  searchTerms?: string[]
   icon?: string
   target?: string
   children?: NavigationItem[]
 }
 
-function navigationLinks(entries: Array<{ id: string; label: string }>): NavigationItem[] {
-  return entries.map((entry) => ({ ...entry, target: entry.id }))
+function localizedSearchTerms(key: string): string[] {
+  return [t(key, {}, { locale: 'en' }), t(key, {}, { locale: 'th' })]
+}
+
+function localizedNavigationItem(id: string, key: string, target = id): NavigationItem {
+  return { id, label: t(key), target, searchTerms: localizedSearchTerms(key) }
+}
+
+function navigationLinks(entries: Array<{ id: string; key: string }>): NavigationItem[] {
+  return entries.map(({ id, key }) => localizedNavigationItem(id, key))
 }
 
 const navigation = computed<NavigationItem[]>(() => [
   {
     id: 'input',
     label: t('features.dev.tabs.input'),
+    searchTerms: localizedSearchTerms('features.dev.tabs.input'),
     icon: 'pi pi-pencil',
     children: [
       {
         id: 'text-inputs',
         label: t('features.dev.input.textInputs'),
+        searchTerms: localizedSearchTerms('features.dev.input.textInputs'),
         children: [
-          { id: 'input-text', label: t('features.dev.input.text'), target: 'input-text' },
-          {
-            id: 'input-text-sizes',
-            label: t('features.dev.input.sizes'),
-            target: 'input-text-sizes',
-          },
-          {
-            id: 'input-password',
-            label: t('features.dev.input.password'),
-            target: 'input-password',
-          },
-          {
-            id: 'input-textarea',
-            label: t('features.dev.input.textarea'),
-            target: 'input-textarea',
-          },
+          localizedNavigationItem('input-text', 'features.dev.input.text'),
+          localizedNavigationItem('input-text-sizes', 'features.dev.input.sizes'),
+          localizedNavigationItem('input-password', 'features.dev.input.password'),
+          localizedNavigationItem('input-textarea', 'features.dev.input.textarea'),
           {
             id: 'number-inputs',
             label: t('features.dev.input.number'),
+            searchTerms: localizedSearchTerms('features.dev.input.number'),
             children: [
-              {
-                id: 'input-number',
-                label: t('features.dev.input.numberValuesTitle'),
-                target: 'input-number',
-              },
-              {
-                id: 'input-number-states',
-                label: t('features.dev.input.numberStates'),
-                target: 'input-number-states',
-              },
+              localizedNavigationItem('input-number', 'features.dev.input.numberValuesTitle'),
+              localizedNavigationItem('input-number-states', 'features.dev.input.numberStates'),
             ],
           },
         ],
@@ -191,62 +192,43 @@ const navigation = computed<NavigationItem[]>(() => [
       {
         id: 'dropdowns',
         label: t('features.dev.input.dropdownsTitle'),
+        searchTerms: localizedSearchTerms('features.dev.input.dropdownsTitle'),
         target: 'input-dropdown',
       },
       {
         id: 'checkboxes',
         label: t('features.dev.input.checkboxesTitle'),
+        searchTerms: localizedSearchTerms('features.dev.input.checkboxesTitle'),
         children: [
-          {
-            id: 'input-checkbox',
-            label: t('features.dev.input.checkboxExamples'),
-            target: 'input-checkbox',
-          },
-          {
-            id: 'input-checkbox-states',
-            label: t('features.dev.input.checkboxStates'),
-            target: 'input-checkbox-states',
-          },
+          localizedNavigationItem('input-checkbox', 'features.dev.input.checkboxExamples'),
+          localizedNavigationItem('input-checkbox-states', 'features.dev.input.checkboxStates'),
         ],
       },
       {
         id: 'radio-buttons',
         label: t('features.dev.input.radioButtonsTitle'),
+        searchTerms: localizedSearchTerms('features.dev.input.radioButtonsTitle'),
         children: [
-          {
-            id: 'input-radio',
-            label: t('features.dev.input.radioExamples'),
-            target: 'input-radio',
-          },
-          {
-            id: 'input-radio-states',
-            label: t('features.dev.input.radioStates'),
-            target: 'input-radio-states',
-          },
+          localizedNavigationItem('input-radio', 'features.dev.input.radioExamples'),
+          localizedNavigationItem('input-radio-states', 'features.dev.input.radioStates'),
         ],
       },
       {
         id: 'switches',
         label: t('features.dev.input.switchesTitle'),
+        searchTerms: localizedSearchTerms('features.dev.input.switchesTitle'),
         children: [
-          {
-            id: 'input-switch',
-            label: t('features.dev.input.switchExamples'),
-            target: 'input-switch',
-          },
-          {
-            id: 'input-switch-states',
-            label: t('features.dev.input.switchStates'),
-            target: 'input-switch-states',
-          },
+          localizedNavigationItem('input-switch', 'features.dev.input.switchExamples'),
+          localizedNavigationItem('input-switch-states', 'features.dev.input.switchStates'),
         ],
       },
       {
         id: 'file-upload',
         label: t('features.dev.input.fileImageTitle'),
+        searchTerms: localizedSearchTerms('features.dev.input.fileImageTitle'),
         children: [
-          { id: 'input-file', label: t('features.dev.input.file'), target: 'input-file' },
-          { id: 'input-image', label: t('features.dev.input.image'), target: 'input-image' },
+          localizedNavigationItem('input-file', 'features.dev.input.file'),
+          localizedNavigationItem('input-image', 'features.dev.input.image'),
         ],
       },
     ],
@@ -254,110 +236,139 @@ const navigation = computed<NavigationItem[]>(() => [
   {
     id: 'button',
     label: t('features.dev.tabs.button'),
+    searchTerms: localizedSearchTerms('features.dev.tabs.button'),
     icon: 'pi pi-circle',
     children: navigationLinks([
-      { id: 'button-severity', label: t('features.dev.button.severities') },
-      { id: 'button-style', label: t('features.dev.button.styles') },
-      { id: 'button-icon', label: t('features.dev.button.iconVariants') },
-      { id: 'button-size', label: t('features.dev.button.sizeVariants') },
-      { id: 'button-layout', label: t('features.dev.button.layout') },
-      { id: 'button-state', label: t('features.dev.button.states') },
+      { id: 'button-severity', key: 'features.dev.button.severities' },
+      { id: 'button-style', key: 'features.dev.button.styles' },
+      { id: 'button-icon', key: 'features.dev.button.iconVariants' },
+      { id: 'button-size', key: 'features.dev.button.sizeVariants' },
+      { id: 'button-layout', key: 'features.dev.button.layout' },
+      { id: 'button-state', key: 'features.dev.button.states' },
     ]),
   },
   {
     id: 'badge',
     label: t('features.dev.tabs.badge'),
+    searchTerms: localizedSearchTerms('features.dev.tabs.badge'),
     icon: 'pi pi-tag',
     children: navigationLinks([
-      { id: 'badge-severity', label: t('features.dev.badge.severities') },
-      { id: 'badge-numeric', label: t('features.dev.badge.numeric') },
-      { id: 'badge-sizes', label: t('features.dev.badge.sizes') },
-      { id: 'badge-tag-appearance', label: t('features.dev.badge.tagAppearance') },
-      { id: 'badge-status', label: t('features.dev.badge.shared') },
+      { id: 'badge-severity', key: 'features.dev.badge.severities' },
+      { id: 'badge-numeric', key: 'features.dev.badge.numeric' },
+      { id: 'badge-sizes', key: 'features.dev.badge.sizes' },
+      { id: 'badge-tag-appearance', key: 'features.dev.badge.tagAppearance' },
+      { id: 'badge-status', key: 'features.dev.badge.shared' },
     ]),
   },
   {
     id: 'card',
     label: t('features.dev.tabs.card'),
+    searchTerms: localizedSearchTerms('features.dev.tabs.card'),
     icon: 'pi pi-id-card',
     children: navigationLinks([
-      { id: 'card-variants', label: t('features.dev.card.variants') },
-      { id: 'card-stat', label: t('features.dev.card.shared') },
-      { id: 'card-skeleton', label: t('features.dev.card.skeleton') },
+      { id: 'card-variants', key: 'features.dev.card.variants' },
+      { id: 'card-stat', key: 'features.dev.card.shared' },
+      { id: 'card-skeleton', key: 'features.dev.card.skeleton' },
     ]),
   },
   {
     id: 'dialog',
     label: t('features.dev.tabs.dialog'),
+    searchTerms: localizedSearchTerms('features.dev.tabs.dialog'),
     icon: 'pi pi-window-maximize',
     children: navigationLinks([
-      { id: 'dialog-basic', label: t('features.dev.dialog.basic') },
-      { id: 'dialog-form', label: t('features.dev.dialog.form') },
-      { id: 'dialog-confirm', label: t('features.dev.dialog.confirm') },
-      { id: 'dialog-maximizable', label: t('features.dev.dialog.maximizable') },
-      { id: 'dialog-options', label: t('features.dev.dialog.options') },
+      { id: 'dialog-basic', key: 'features.dev.dialog.basic' },
+      { id: 'dialog-form', key: 'features.dev.dialog.form' },
+      { id: 'dialog-confirm', key: 'features.dev.dialog.confirm' },
+      { id: 'dialog-maximizable', key: 'features.dev.dialog.maximizable' },
+      { id: 'dialog-options', key: 'features.dev.dialog.options' },
     ]),
   },
   {
     id: 'typography',
     label: t('features.dev.tabs.typography'),
+    searchTerms: localizedSearchTerms('features.dev.tabs.typography'),
     icon: 'pi pi-align-left',
     children: navigationLinks([
-      { id: 'typography-size', label: t('features.dev.typography.sizes') },
-      { id: 'typography-tone', label: t('features.dev.typography.tones') },
-      { id: 'typography-custom', label: t('features.dev.typography.customSizes') },
-      { id: 'typography-color', label: t('features.dev.typography.semanticColors') },
+      { id: 'typography-size', key: 'features.dev.typography.sizes' },
+      { id: 'typography-tone', key: 'features.dev.typography.tones' },
+      { id: 'typography-custom', key: 'features.dev.typography.customSizes' },
+      { id: 'typography-color', key: 'features.dev.typography.semanticColors' },
     ]),
   },
   {
     id: 'chart',
     label: t('features.dev.tabs.chart'),
+    searchTerms: localizedSearchTerms('features.dev.tabs.chart'),
     icon: 'pi pi-chart-bar',
-    children: navigationLinks([{ id: 'chart-types', label: t('features.dev.chart.types') }]),
+    children: navigationLinks([{ id: 'chart-types', key: 'features.dev.chart.types' }]),
   },
   {
     id: 'avatar',
     label: t('features.dev.tabs.avatar'),
+    searchTerms: localizedSearchTerms('features.dev.tabs.avatar'),
     icon: 'pi pi-user',
     children: navigationLinks([
-      { id: 'avatar-content', label: t('features.dev.avatar.content') },
-      { id: 'avatar-shape', label: t('features.dev.avatar.shapes') },
-      { id: 'avatar-size', label: t('features.dev.avatar.sizes') },
+      { id: 'avatar-content', key: 'features.dev.avatar.content' },
+      { id: 'avatar-shape', key: 'features.dev.avatar.shapes' },
+      { id: 'avatar-size', key: 'features.dev.avatar.sizes' },
     ]),
   },
   {
     id: 'message',
     label: t('features.dev.tabs.message'),
+    searchTerms: localizedSearchTerms('features.dev.tabs.message'),
     icon: 'pi pi-info-circle',
     children: navigationLinks([
-      { id: 'message-severity', label: t('features.dev.message.severities') },
-      { id: 'message-appearance', label: t('features.dev.message.variants') },
-      { id: 'message-state', label: t('features.dev.message.states') },
+      { id: 'message-severity', key: 'features.dev.message.severities' },
+      { id: 'message-appearance', key: 'features.dev.message.variants' },
+      { id: 'message-state', key: 'features.dev.message.states' },
+    ]),
+  },
+  {
+    id: 'system',
+    label: t('features.dev.tabs.system'),
+    searchTerms: localizedSearchTerms('features.dev.tabs.system'),
+    icon: 'pi pi-cog',
+    children: navigationLinks([
+      { id: 'toast-notifications', key: 'features.dev.toast.title' },
+      { id: 'confirm-usage', key: 'features.dev.confirm.title' },
     ]),
   },
   {
     id: 'progress',
     label: t('features.dev.tabs.progress'),
+    searchTerms: localizedSearchTerms('features.dev.tabs.progress'),
     icon: 'pi pi-chart-line',
     children: navigationLinks([
-      { id: 'progress-mode', label: t('features.dev.progress.modes') },
-      { id: 'progress-values', label: t('features.dev.progress.values') },
+      { id: 'progress-mode', key: 'features.dev.progress.modes' },
+      { id: 'progress-values', key: 'features.dev.progress.values' },
     ]),
   },
   {
     id: 'table',
     label: t('features.dev.tabs.dataTable'),
+    searchTerms: localizedSearchTerms('features.dev.tabs.dataTable'),
     icon: 'pi pi-table',
     children: navigationLinks([
-      { id: 'data-table-formats', label: t('features.dev.dataTable.formats') },
-      { id: 'data-table-selection', label: t('features.dev.dataTable.selection') },
-      { id: 'data-table-groups', label: t('features.dev.dataTable.groups') },
-      { id: 'data-table-states', label: t('features.dev.dataTable.states') },
+      { id: 'data-table-formats', key: 'features.dev.dataTable.formats' },
+      { id: 'data-table-selection', key: 'features.dev.dataTable.selection' },
+      { id: 'data-table-groups', key: 'features.dev.dataTable.groups' },
+      { id: 'data-table-states', key: 'features.dev.dataTable.states' },
     ]),
   },
 ])
 
 const navigationTargets = computed(() => collectNavigationTargets(navigation.value))
+const normalizedNavigationSearch = computed(() => normalizeSearchText(navigationSearch.value))
+const visibleNavigation = computed(() =>
+  filterNavigationItems(navigation.value, normalizedNavigationSearch.value),
+)
+const visibleExpandedItems = computed(() =>
+  normalizedNavigationSearch.value
+    ? collectExpandableNavigationItems(visibleNavigation.value)
+    : expandedItems.value,
+)
 
 let articleObserver: IntersectionObserver | undefined
 
@@ -381,6 +392,36 @@ function collectNavigationTargets(items: NavigationItem[]): string[] {
   return items.flatMap((item) => [
     ...(item.target ? [item.target] : []),
     ...(item.children ? collectNavigationTargets(item.children) : []),
+  ])
+}
+
+function filterNavigationItems(items: NavigationItem[], query: string): NavigationItem[] {
+  if (!query) return items
+
+  return items.flatMap((item) => {
+    const targetText = item.target
+      ? typeof document === 'undefined'
+        ? ''
+        : document.getElementById(item.target)?.textContent
+      : ''
+    const bilingualSectionText = targetText ? translatedSearchText(targetText, locale.value) : ''
+    const searchableText = [
+      item.label,
+      ...(item.searchTerms ?? []),
+      targetText ?? '',
+      bilingualSectionText,
+    ].join(' ')
+    if (matchesSearchText(query, searchableText)) return [item]
+
+    const children = item.children ? filterNavigationItems(item.children, query) : []
+    return children.length ? [{ ...item, children }] : []
+  })
+}
+
+function collectExpandableNavigationItems(items: NavigationItem[]): string[] {
+  return items.flatMap((item) => [
+    ...(item.children?.length ? [item.id] : []),
+    ...(item.children ? collectExpandableNavigationItems(item.children) : []),
   ])
 }
 
@@ -485,16 +526,30 @@ onUnmounted(() => articleObserver?.disconnect())
             class="min-h-0 overflow-hidden"
           >
             <div class="space-y-1 rounded-xl border app-surface-border app-surface p-3">
+              <AppInputText
+                id="showcase-navigation-search"
+                v-model="navigationSearch"
+                type="search"
+                size="small"
+                fluid
+                :aria-label="t('features.dev.navigation.searchSections')"
+                :placeholder="t('features.dev.navigation.searchSectionsPlaceholder')"
+              />
               <ul class="m-0 list-none space-y-1 p-0">
-                <ShowcaseNavigationItem
-                  v-for="item in navigation"
-                  :key="item.id"
-                  :item="item"
-                  :active-target="activeArticle"
-                  :expanded-items="expandedItems"
-                  @toggle="toggleNavigationItem"
-                  @navigate="navigateTo"
-                />
+                <template v-if="visibleNavigation.length">
+                  <ShowcaseNavigationItem
+                    v-for="item in visibleNavigation"
+                    :key="item.id"
+                    :item="item"
+                    :active-target="activeArticle"
+                    :expanded-items="visibleExpandedItems"
+                    @toggle="toggleNavigationItem"
+                    @navigate="navigateTo"
+                  />
+                </template>
+                <li v-else class="list-none px-2 py-1.5 app-text-sm app-text-muted" role="status">
+                  {{ t('features.dev.navigation.noSectionMatches') }}
+                </li>
               </ul>
             </div>
           </nav>
@@ -511,6 +566,8 @@ onUnmounted(() => articleObserver?.disconnect())
         <ChartSection />
         <AvatarSection />
         <MessageSection />
+        <ToastSection />
+        <ConfirmSection />
         <ProgressSection />
         <DataTableSection :form="form" />
       </article>

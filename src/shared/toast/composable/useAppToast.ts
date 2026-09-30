@@ -1,16 +1,41 @@
-import { useToast } from 'primevue/usetoast'
 import { useI18n } from 'vue-i18n'
-import { useToastStore, type ToastOptions, type ToastSeverity } from '../store/main'
+import {
+  useToastStore,
+  type ToastDisplaySeverity,
+  type ToastItem,
+  type ToastOptions,
+  type ToastSeverity,
+} from '../store/main'
+
+const defaultDurations: Record<ToastSeverity, number> = {
+  success: 3000,
+  info: 3500,
+  warning: 4500,
+  danger: 6000,
+  warn: 4500,
+  error: 6000,
+  contrast: 3500,
+  secondary: 3500,
+}
+
+const defaultTitles: Record<ToastSeverity, string> = {
+  success: 'Success',
+  info: 'Information',
+  warning: 'Warning',
+  danger: 'Error',
+  warn: 'Warning',
+  error: 'Error',
+  contrast: 'Notice',
+  secondary: 'Notice',
+}
+
+function canonicalSeverity(severity: ToastSeverity): ToastDisplaySeverity {
+  if (severity === 'warn') return 'warning'
+  if (severity === 'error') return 'danger'
+  return severity
+}
 
 export function useAppToast() {
-  const fallbackSummaries: Record<ToastSeverity, string> = {
-    success: 'Success',
-    info: 'Information',
-    warn: 'Warning',
-    error: 'Error',
-    contrast: 'Notice',
-    secondary: 'Notice',
-  }
   let translate: ((key: string) => string) | undefined
 
   try {
@@ -20,99 +45,122 @@ export function useAppToast() {
     translate = undefined
   }
 
-  function defaultSummary(severity: ToastSeverity) {
-    return translate?.(`shared.toast.${severity}`) ?? fallbackSummaries[severity]
-  }
-
-  let primeToast: ReturnType<typeof useToast> | null = null
-  try {
-    primeToast = useToast()
-  } catch {
-    primeToast = null
-  }
-
   const toastStore = useToastStore()
 
-  function show(options: ToastOptions) {
-    const defaultLife: Record<ToastSeverity, number> = {
-      success: 3000,
-      info: 3500,
-      warn: 4500,
-      error: 6000,
-      contrast: 3500,
-      secondary: 3500,
+  function defaultTitle(severity: ToastSeverity) {
+    return translate?.(`shared.toast.${canonicalSeverity(severity)}`) ?? defaultTitles[severity]
+  }
+
+  function show(messageOrOptions: string | ToastOptions, options?: ToastOptions) {
+    const input =
+      typeof messageOrOptions === 'string'
+        ? { ...options, message: messageOrOptions }
+        : messageOrOptions
+    const severity = input.severity ?? 'info'
+    const requestedDuration = input.duration ?? input.life ?? defaultDurations[severity]
+    const duration = requestedDuration === false ? false : Math.max(0, requestedDuration)
+    const item: Omit<ToastItem, 'id'> & { id?: string } = {
+      id: input.id,
+      severity: canonicalSeverity(severity),
+      title: input.title || input.summary || input.message || defaultTitle(severity),
+      description: input.description ?? input.detail,
+      duration: input.sticky || duration === 0 ? false : duration,
+      sticky: input.sticky ?? (duration === false || duration === 0),
+      closable: input.closable ?? true,
+      group: input.group,
+      data: input.data,
     }
 
-    const severity = options.severity || 'info'
-    const payload = {
-      severity,
-      summary: options.summary || defaultSummary(severity),
-      detail: options.detail,
-      life: options.life ?? defaultLife[severity],
-      sticky: options.sticky,
-      closable: options.closable ?? true,
-      group: options.group,
-      data: options.data,
-    }
+    return toastStore.show(item)
+  }
 
-    if (primeToast) {
-      primeToast.add(payload)
+  function showAs(
+    severity: ToastSeverity,
+    summaryOrOptions?: string | ToastOptions,
+    detailOrOptions?: string | ToastOptions,
+    legacyOptions?: Partial<ToastOptions>,
+  ) {
+    let options: ToastOptions
+    if (typeof detailOrOptions === 'string') {
+      options = { ...legacyOptions, description: detailOrOptions }
+    } else if (detailOrOptions) {
+      options = detailOrOptions
+    } else if (legacyOptions) {
+      options = legacyOptions
     } else {
-      toastStore.show(payload)
+      options = {}
     }
-  }
 
-  function success(summary?: string, detail?: string, options?: Partial<ToastOptions>) {
-    const severity = options?.severity ?? 'success'
-    show({
+    const summary = typeof summaryOrOptions === 'string' ? summaryOrOptions : undefined
+    if (typeof summaryOrOptions === 'object' && summaryOrOptions !== null) {
+      options = { ...summaryOrOptions, ...options }
+    }
+
+    return show({
       ...options,
-      severity,
-      summary: summary || options?.summary || defaultSummary(severity),
-      detail: detail ?? options?.detail,
+      severity: options.severity ?? severity,
+      title: summary ?? options.title ?? options.summary,
     })
   }
 
-  function info(summary?: string, detail?: string, options?: Partial<ToastOptions>) {
-    const severity = options?.severity ?? 'info'
-    show({
-      ...options,
-      severity,
-      summary: summary || options?.summary || defaultSummary(severity),
-      detail: detail ?? options?.detail,
-    })
+  function success(
+    summaryOrOptions?: string | ToastOptions,
+    detailOrOptions?: string | ToastOptions,
+    options?: Partial<ToastOptions>,
+  ) {
+    return showAs('success', summaryOrOptions, detailOrOptions, options)
   }
 
-  function warning(summary?: string, detail?: string, options?: Partial<ToastOptions>) {
-    const severity = options?.severity ?? 'warn'
-    show({
-      ...options,
-      severity,
-      summary: summary || options?.summary || defaultSummary(severity),
-      detail: detail ?? options?.detail,
-    })
+  function info(
+    summaryOrOptions?: string | ToastOptions,
+    detailOrOptions?: string | ToastOptions,
+    options?: Partial<ToastOptions>,
+  ) {
+    return showAs('info', summaryOrOptions, detailOrOptions, options)
   }
 
-  function error(summary?: string, detail?: string, options?: Partial<ToastOptions>) {
-    const severity = options?.severity ?? 'error'
-    show({
-      ...options,
-      severity,
-      summary: summary || options?.summary || defaultSummary(severity),
-      detail: detail ?? options?.detail,
-    })
+  function warning(
+    summaryOrOptions?: string | ToastOptions,
+    detailOrOptions?: string | ToastOptions,
+    options?: Partial<ToastOptions>,
+  ) {
+    return showAs('warning', summaryOrOptions, detailOrOptions, options)
+  }
+
+  function danger(
+    summaryOrOptions?: string | ToastOptions,
+    detailOrOptions?: string | ToastOptions,
+    options?: Partial<ToastOptions>,
+  ) {
+    return showAs('danger', summaryOrOptions, detailOrOptions, options)
+  }
+
+  function error(
+    summaryOrOptions?: string | ToastOptions,
+    detailOrOptions?: string | ToastOptions,
+    options?: Partial<ToastOptions>,
+  ) {
+    return danger(summaryOrOptions, detailOrOptions, options)
+  }
+
+  function warn(
+    summaryOrOptions?: string | ToastOptions,
+    detailOrOptions?: string | ToastOptions,
+    options?: Partial<ToastOptions>,
+  ) {
+    return warning(summaryOrOptions, detailOrOptions, options)
+  }
+
+  function dismiss(id: string) {
+    toastStore.dismiss(id)
+  }
+
+  function clear() {
+    toastStore.clear()
   }
 
   function removeGroup(group: string) {
-    if (primeToast) {
-      primeToast.removeGroup(group)
-    }
-  }
-
-  function removeAllGroups() {
-    if (primeToast) {
-      primeToast.removeAllGroups()
-    }
-    toastStore.clear()
+    toastStore.removeGroup(group)
   }
 
   return {
@@ -120,10 +168,15 @@ export function useAppToast() {
     success,
     info,
     warning,
-    warn: warning,
+    warn,
+    danger,
     error,
+    dismiss,
+    clear,
     removeGroup,
-    removeAllGroups,
+    removeAllGroups: clear,
     toastStore,
   }
 }
+
+export const useAppToastSystem = useAppToast

@@ -5,4 +5,9 @@ export const en = {
   error: 'Error',
   contrast: 'Notice',
   secondary: 'Notice',
+  danger: 'Error',
+  warning: 'Warning',
+  notifications: 'Notifications',
+  dismiss: 'Dismiss notification',
+  timeRemaining: 'Notification time remaining',
 }
