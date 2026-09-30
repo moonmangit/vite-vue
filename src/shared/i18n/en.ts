@@ -1,0 +1,31 @@
+export const en = {
+  navigation: {
+    off: 'OFF',
+    openItem: 'Open {item}',
+  },
+  status: {
+    active: 'Active',
+    pending: 'Pending',
+    warning: 'Warning',
+    error: 'Error',
+    success: 'Success',
+    inactive: 'Inactive',
+  },
+  fileUpload: {
+    browse: 'Browse',
+    dropPrompt: 'Drop your files here or',
+    maxSize: 'Maximum file size: {size}',
+    selectedFiles: 'Selected files',
+    queued: 'Waiting to upload',
+    uploading: 'Uploading',
+    uploaded: 'Uploaded',
+    fileTooLarge: 'File exceeds the {size} limit',
+    unsupportedType: 'This file type is not accepted',
+    missingHandler: 'An upload handler is required for this variant',
+    uploadFailed: 'Upload failed',
+    progressFor: 'Upload progress for {name}',
+    retry: 'Retry',
+    preview: 'Preview of {name}',
+    remove: 'Remove {name}',
+  },
+}

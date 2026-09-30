@@ -1,15 +1,15 @@
 export const primaryPalette = {
-  '50': '#f2e7fe',
-  '100': '#e5cffc',
-  '200': '#ca9efa',
-  '300': '#b06ef7',
-  '400': '#963df5',
-  '500': '#7c0df2',
-  '600': '#630ac2',
-  '700': '#4a0891',
-  '800': '#310561',
-  '900': '#190330',
-  '950': '#110222',
+  '50': 'oklch(94.70% 0.022 272.06)',
+  '100': 'oklch(89.32% 0.046 270.44)',
+  '200': 'oklch(78.66% 0.093 269.95)',
+  '300': 'oklch(68.15% 0.145 268.34)',
+  '400': 'oklch(58.26% 0.197 266.21)',
+  '500': 'oklch(49.77% 0.242 264.30)',
+  '600': 'oklch(42.52% 0.203 264.33)',
+  '700': 'oklch(34.87% 0.161 264.53)',
+  '800': 'oklch(26.82% 0.115 264.97)',
+  '900': 'oklch(18.23% 0.067 264.39)',
+  '950': 'oklch(15.36% 0.051 264.34)',
 } as const
 
 export const surfacePalette = {
@@ -27,19 +27,7 @@ export const surfacePalette = {
   950: '#020617',
 } as const
 
-export const secondaryPalette = {
-  '50': '#f8fafc',
-  '100': '#f1f5f9',
-  '200': '#e2e8f0',
-  '300': '#cbd5e1',
-  '400': '#94a3b8',
-  '500': '#64748b',
-  '600': '#475569',
-  '700': '#334155',
-  '800': '#1e293b',
-  '900': '#0f172a',
-  '950': '#020617',
-} as const
+export const secondaryPalette = surfacePalette
 
 export const successPalette = {
   '50': '#ecfdf5',
@@ -113,8 +101,6 @@ export const helpPalette = {
 
 export const designTokens = {
   primary: primaryPalette,
-  surface: surfacePalette,
-  secondary: secondaryPalette,
   success: successPalette,
   info: infoPalette,
   warning: warningPalette,

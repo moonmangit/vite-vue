@@ -1,0 +1,31 @@
+export const th = {
+  navigation: {
+    off: 'ปิด',
+    openItem: 'เปิด {item}',
+  },
+  status: {
+    active: 'ทำงานอยู่',
+    pending: 'รอดำเนินการ',
+    warning: 'คำเตือน',
+    error: 'ผิดพลาด',
+    success: 'สำเร็จ',
+    inactive: 'ไม่ทำงาน',
+  },
+  fileUpload: {
+    browse: 'เลือกไฟล์',
+    dropPrompt: 'วางไฟล์ที่นี่หรือ',
+    maxSize: 'ขนาดไฟล์สูงสุด: {size}',
+    selectedFiles: 'ไฟล์ที่เลือก',
+    queued: 'รออัปโหลด',
+    uploading: 'กำลังอัปโหลด',
+    uploaded: 'อัปโหลดแล้ว',
+    fileTooLarge: 'ไฟล์มีขนาดเกิน {size}',
+    unsupportedType: 'ไม่รองรับไฟล์ประเภทนี้',
+    missingHandler: 'ตัวเลือกนี้ต้องมีตัวจัดการอัปโหลด',
+    uploadFailed: 'อัปโหลดไม่สำเร็จ',
+    progressFor: 'ความคืบหน้าการอัปโหลด {name}',
+    retry: 'ลองอีกครั้ง',
+    preview: 'ตัวอย่างของ {name}',
+    remove: 'นำ {name} ออก',
+  },
+}

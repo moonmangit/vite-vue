@@ -1,15 +1,10 @@
-@import './app/config/font/google-sans.css';
-@import '@fontsource/open-sans/400.css';
-@import '@fontsource/open-sans/600.css';
-@import '@fontsource/open-sans/700.css';
-@import '@fontsource/inter/400.css';
-@import '@fontsource/inter/600.css';
-@import '@fontsource/inter/700.css';
 @import 'tailwindcss';
 
 @custom-variant app-dark (&:where(.app-dark, .app-dark *));
 
 @theme {
+  --breakpoint-showcase: 87.5rem;
+  --container-9xl: 96rem;
   --color-primary-50: var(--brand-primary-50);
   --color-primary-100: var(--brand-primary-100);
   --color-primary-200: var(--brand-primary-200);
@@ -21,29 +16,29 @@
   --color-primary-800: var(--brand-primary-800);
   --color-primary-900: var(--brand-primary-900);
   --color-primary-950: var(--brand-primary-950);
-  --color-surface-0: var(--brand-surface-0);
-  --color-surface-50: var(--brand-surface-50);
-  --color-surface-100: var(--brand-surface-100);
-  --color-surface-200: var(--brand-surface-200);
-  --color-surface-300: var(--brand-surface-300);
-  --color-surface-400: var(--brand-surface-400);
-  --color-surface-500: var(--brand-surface-500);
-  --color-surface-600: var(--brand-surface-600);
-  --color-surface-700: var(--brand-surface-700);
-  --color-surface-800: var(--brand-surface-800);
-  --color-surface-900: var(--brand-surface-900);
-  --color-surface-950: var(--brand-surface-950);
-  --color-secondary-50: var(--brand-secondary-50);
-  --color-secondary-100: var(--brand-secondary-100);
-  --color-secondary-200: var(--brand-secondary-200);
-  --color-secondary-300: var(--brand-secondary-300);
-  --color-secondary-400: var(--brand-secondary-400);
-  --color-secondary-500: var(--brand-secondary-500);
-  --color-secondary-600: var(--brand-secondary-600);
-  --color-secondary-700: var(--brand-secondary-700);
-  --color-secondary-800: var(--brand-secondary-800);
-  --color-secondary-900: var(--brand-secondary-900);
-  --color-secondary-950: var(--brand-secondary-950);
+  --color-surface-0: var(--p-surface-0);
+  --color-surface-50: var(--p-surface-50);
+  --color-surface-100: var(--p-surface-100);
+  --color-surface-200: var(--p-surface-200);
+  --color-surface-300: var(--p-surface-300);
+  --color-surface-400: var(--p-surface-400);
+  --color-surface-500: var(--p-surface-500);
+  --color-surface-600: var(--p-surface-600);
+  --color-surface-700: var(--p-surface-700);
+  --color-surface-800: var(--p-surface-800);
+  --color-surface-900: var(--p-surface-900);
+  --color-surface-950: var(--p-surface-950);
+  --color-secondary-50: var(--p-surface-50);
+  --color-secondary-100: var(--p-surface-100);
+  --color-secondary-200: var(--p-surface-200);
+  --color-secondary-300: var(--p-surface-300);
+  --color-secondary-400: var(--p-surface-400);
+  --color-secondary-500: var(--p-surface-500);
+  --color-secondary-600: var(--p-surface-600);
+  --color-secondary-700: var(--p-surface-700);
+  --color-secondary-800: var(--p-surface-800);
+  --color-secondary-900: var(--p-surface-900);
+  --color-secondary-950: var(--p-surface-950);
   --color-success-50: var(--brand-success-50);
   --color-success-100: var(--brand-success-100);
   --color-success-200: var(--brand-success-200);
@@ -102,27 +97,244 @@
 }
 
 :root {
-  font-family:
-    'Google Sans',
-    'Open Sans',
-    Inter,
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    sans-serif;
+  --app-surface-color: var(--p-surface-0);
+  --app-surface-border-color: var(--p-surface-200);
+  --app-chart-axis-color: var(--p-surface-500);
+  --app-chart-grid-color: var(--p-surface-100);
+  --app-chart-marker-color: var(--p-surface-0);
+  --app-type-xs: 0.75rem;
+  --app-type-sm: 0.875rem;
+  --app-type-md: 1rem;
+  --app-type-lg: 1.125rem;
+  --app-type-xl: 1.25rem;
+  --app-type-2xl: 1.5rem;
+  --app-type-3xl: 1.875rem;
+  --app-tone-normal: var(--p-surface-900);
+  --app-tone-muted: var(--p-surface-500);
+  --app-tone-disabled: var(--p-surface-400);
+}
+
+.app-dark {
+  --app-surface-color: var(--p-surface-900);
+  --app-surface-border-color: var(--p-surface-700);
+  --app-chart-axis-color: var(--p-surface-400);
+  --app-chart-grid-color: var(--p-surface-800);
+  --app-chart-marker-color: var(--p-surface-900);
+  --app-tone-normal: var(--p-surface-0);
+  --app-tone-muted: var(--p-surface-400);
+  --app-tone-disabled: var(--p-surface-500);
+}
+
+.app-text-xs {
+  font-size: var(--app-font-size, var(--app-type-xs));
+  line-height: 1rem;
+}
+
+.app-text-sm {
+  font-size: var(--app-font-size, var(--app-type-sm));
+  line-height: 1.25rem;
+}
+
+.app-text-md {
+  font-size: var(--app-font-size, var(--app-type-md));
+  line-height: 1.5rem;
+}
+
+.app-text-lg {
+  font-size: var(--app-font-size, var(--app-type-lg));
+  line-height: 1.75rem;
+}
+
+.app-text-xl {
+  font-size: var(--app-font-size, var(--app-type-xl));
+  line-height: 1.75rem;
+}
+
+.app-text-2xl {
+  font-size: var(--app-font-size, var(--app-type-2xl));
+  line-height: 2rem;
+}
+
+.app-text-3xl {
+  font-size: var(--app-font-size, var(--app-type-3xl));
+  line-height: 2.25rem;
+}
+
+.app-text-custom {
+  font-size: var(--app-font-size, var(--app-type-md));
+}
+
+.app-text-normal {
+  color: var(--app-tone-normal);
+}
+
+.app-text-muted {
+  color: var(--app-tone-muted);
+}
+
+.app-text-disabled {
+  color: var(--app-tone-disabled);
+}
+
+.app-hover-text-normal:hover {
+  color: var(--app-tone-normal);
+}
+
+.group:hover .app-group-hover-text-normal {
+  color: var(--app-tone-normal);
+}
+
+.app-surface {
+  background-color: var(--app-surface-color);
+}
+
+.app-card.p-card {
+  border: 1px solid var(--app-surface-border-color);
+  border-radius: 1rem;
+}
+
+.app-card .p-card-title {
+  color: var(--app-tone-normal);
+  font-size: var(--app-type-md);
+  font-weight: 600;
+  line-height: 1.5rem;
+}
+
+.app-card__title-row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.app-card .p-card-subtitle {
+  margin: 0;
+  color: var(--app-tone-muted);
+  font-size: var(--app-type-sm);
+  line-height: 1.25rem;
+}
+
+.app-card--blank .p-card-body {
+  gap: 0;
+  padding: 1rem;
+}
+
+.app-card--blank .p-card-caption {
+  gap: 0.25rem;
+  padding: 0 0 0.75rem;
+}
+
+.app-card--blank .p-card-content {
+  padding: 0;
+}
+
+.app-card--blank .p-card-footer {
+  padding: 0.75rem 0 0;
+}
+
+.app-card--full .p-card-body {
+  gap: 0;
+  padding: 0;
+}
+
+.app-card--full .p-card-caption {
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--app-surface-border-color);
+  padding: 1rem;
+}
+
+.app-surface-border {
+  border-color: var(--app-surface-border-color);
+}
+
+.app-card--full .p-card-content {
+  padding: 1rem;
+}
+
+.app-card--full .p-card-footer {
+  padding: 0 1rem 1rem;
+}
+
+.form-json-preview {
+  --app-json-key: #1d4ed8;
+  --app-json-string: #047857;
+  --app-json-number: #b45309;
+  --app-json-literal: #7c3aed;
+  --app-json-punctuation: #71717a;
+  color: var(--app-tone-normal);
+}
+
+.app-dark .form-json-preview {
+  --app-json-key: #93c5fd;
+  --app-json-string: #86efac;
+  --app-json-number: #fcd34d;
+  --app-json-literal: #c4b5fd;
+  --app-json-punctuation: #a1a1aa;
+}
+
+.form-json-preview .hljs-attr {
+  color: var(--app-json-key);
+}
+
+.form-json-preview .hljs-string {
+  color: var(--app-json-string);
+}
+
+.form-json-preview .hljs-number {
+  color: var(--app-json-number);
+}
+
+.form-json-preview .hljs-literal {
+  color: var(--app-json-literal);
+}
+
+.form-json-preview .hljs-punctuation {
+  color: var(--app-json-punctuation);
+}
+
+.app-chart .apexcharts-xaxis text,
+.app-chart .apexcharts-yaxis text {
+  fill: var(--app-chart-axis-color) !important;
+}
+
+.app-chart .apexcharts-gridline {
+  stroke: var(--app-chart-grid-color) !important;
+}
+
+.app-chart .apexcharts-xaxis line,
+.app-chart .apexcharts-yaxis line {
+  stroke: var(--app-surface-border-color) !important;
+}
+
+.app-chart .apexcharts-marker {
+  stroke: var(--app-chart-marker-color) !important;
+}
+
+:root {
+  font-family: 'Noto Sans Thai';
   color-scheme: light;
-  background: #f8fafc;
+  background: var(--app-surface-color);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+*,
+*::before,
+*::after {
+  font-family: 'Noto Sans Thai' !important;
+}
+
+.pi,
+.pi::before {
+  font-family: 'primeicons' !important;
+}
+
 .app-dark {
   color-scheme: dark;
-  background: #09090b;
+  background: var(--app-surface-color);
 }
 
 body {
