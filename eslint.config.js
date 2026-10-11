@@ -89,4 +89,11 @@ export default typescriptEslint.config(
     },
   },
   eslintConfigPrettier,
+  {
+    files: ['src/shared/component/App*.vue', 'src/shared/toast/component/AppToastOutlet.vue'],
+    rules: {
+      // Optional App facade props intentionally preserve the wrapped vendor component defaults.
+      'vue/require-default-prop': 'off',
+    },
+  },
 )

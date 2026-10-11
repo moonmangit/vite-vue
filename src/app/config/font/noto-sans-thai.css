@@ -1,0 +1,10 @@
+/* Noto Sans Thai Variable Font */
+@font-face {
+  font-family: 'Noto Sans Thai';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src:
+    url('./Noto_Sans_Thai/NotoSansThai-VariableFont_wdth,wght.ttf') format('truetype-variations'),
+    url('./Noto_Sans_Thai/NotoSansThai-VariableFont_wdth,wght.ttf') format('truetype');
+}

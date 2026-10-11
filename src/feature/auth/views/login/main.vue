@@ -1,0 +1,37 @@
+<script setup lang="ts">
+import LoginForm from '../../component/LoginForm.vue'
+</script>
+
+<template>
+  <div
+    class="flex min-h-screen items-center justify-center p-4 bg-gradient-to-br from-surface-100 via-surface-50 to-primary-50 app-dark:from-surface-950 app-dark:via-surface-900 app-dark:to-primary-950/20"
+  >
+    <div
+      class="w-full max-w-md rounded-2xl border border-surface-200 bg-surface-0/90 p-8 shadow-xl backdrop-blur-md app-dark:border-surface-800 app-dark:bg-surface-900/90"
+    >
+      <div class="mb-6 text-center">
+        <div
+          class="inline-flex size-12 items-center justify-center rounded-xl bg-primary-600 app-text-xl font-black text-white shadow-md shadow-primary-500/20 mb-3"
+        >
+          A
+        </div>
+        <div class="flex items-center justify-center gap-2 mb-1">
+          <h1 class="app-text-2xl app-text-normal font-black tracking-tight">
+            Apex<span class="text-primary-600">Admin</span>
+          </h1>
+        </div>
+        <p class="app-text-xs app-text-muted">
+          {{ $t('features.auth.login.title') }}
+        </p>
+      </div>
+
+      <LoginForm />
+
+      <div
+        class="mt-6 border-t border-surface-100 pt-4 text-center app-text-xs app-text-muted app-dark:border-surface-800"
+      >
+        <span>{{ $t('features.auth.login.version') }}</span>
+      </div>
+    </div>
+  </div>
+</template>
